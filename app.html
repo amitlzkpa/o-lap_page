@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>O-LAP | Computational Furniture</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+<body class="blue-grey lighten-5">
+
+
+
+
+
+  <div class="row">
+
+    <div class="col l8" id="viewport">
+    </div>
+
+    <div class="col l4">
+      <h1>O-LAP</h1>
+      <h5>Computational furniture design.</h5>
+
+      <div class="divider"></div>
+
+      <form action="#" id="ui">
+        <p>
+          <label>
+            <input type="checkbox" />
+            <span>Red</span>
+          </label>
+        </p>
+        <p>
+          <label>
+            <input type="checkbox" checked="checked" />
+            <span>Yellow</span>
+          </label>
+        </p>
+      </form>
+
+
+
+
+
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/materialize.js"></script>
+  <script src="js/init.js"></script>
+
+  <script src="js/three/three.js"></script>
+  <script src="js/three/Detector.js"></script>
+  <script src="js/three/THREEx.FullScreen.js"></script>
+  <script src="js/three/THREEx.screenshot.js"></script>
+  <script src="js/three/THREEx.WindowResize.js"></script>
+  <script src="js/three/OrbitControls.js"></script>
+  <script src="js/three/threeScene.js"></script>
+  <script src="js/three/helpers.js"></script>
+  <script src="js/OLAPFramework.js"></script>
+  <script src="js/OLAPDesignObject.js"></script>
+  <script src="js/Design_A.js"></script>
+
+  <script type="text/javascript">
+
+
+    var OLAP = new OLAPFramework(scene, $("#ui"));
+    OLAP.openDesign(Design_A);
+  </script>
+  
+  <script src="js/OLAPVisualization.js"></script>
+  <script src="js/OLAPScene.js"></script>
+  <script src="js/scene.js"></script>
+
+  </body>
+</html>
