@@ -1,6 +1,6 @@
 
 var scene, renderer;
-var camera, cameraControl;
+var camera, cameraControls;
 
 var WIDTH_FACTOR = 0.64;
 
@@ -43,10 +43,10 @@ function init(){
 
 	// create a camera contol
 	cameraControls	= new THREE.OrbitControls(camera, renderer.domElement);
-	cameraControls.autoRotate = true;
+	cameraControls.autoRotate = false;
 
-	var gridHelper = new THREE.GridHelper(1000, 100);
-	scene.add(gridHelper);
+	// var gridHelper = new THREE.GridHelper(1000, 100);
+	// scene.add(gridHelper);
 
 	// transparently support window resize
 	THREEx.WindowResize.bind(renderer, camera, WIDTH_FACTOR);
@@ -64,13 +64,6 @@ function init(){
     var dirLight = new THREE.DirectionalLight(0xffffff, 1);
     dirLight.position.set(100, 100, 50);
     scene.add(dirLight);
-
-	// here you add your objects
-	// - you will most likely replace this part by your own
-	var geometry	= new THREE.TorusGeometry( 1, 0.42 );
-	var material	= new THREE.MeshNormalMaterial();
-	var mesh	= new THREE.Mesh( geometry, material );
-	scene.add( mesh );
 }
 
 // animation loop

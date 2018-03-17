@@ -14,7 +14,7 @@
 }
 
 
-body {
+body.index {
 	font-size: 2.5em;
 }
 
@@ -53,4 +53,30 @@ body {
 
 .ht-600 {
 	min-height: 600px;
+}
+
+
+
+
+
+
+
+
+#design-ui {
+	height: 60vh;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+
+#scene-ui {
+	height: 20vh;
+}
+
+
+
+
+.no-scroll {
+	overflow-x: hidden;
+	overflow-y: hidden;	
 }

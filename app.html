@@ -10,7 +10,7 @@
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 </head>
-<body class="blue-grey lighten-5">
+<body class="blue-grey lighten-5 no-scroll">
 
 
 
@@ -27,21 +27,24 @@
 
       <div class="divider"></div>
 
-      <form action="#" id="ui">
-        <p>
-          <label>
-            <input type="checkbox" />
-            <span>Red</span>
-          </label>
-        </p>
-        <p>
-          <label>
-            <input type="checkbox" checked="checked" />
-            <span>Yellow</span>
-          </label>
-        </p>
-      </form>
+      <div id="design-ui">
+        <h5>Parameters</h5>
+        <form action="#" id="ui">
+        </form>
+      </div>
 
+      <div class="divider"></div>
+
+      <div id="scene-ui">
+        <h5>Scene Settings</h5>
+        <div class="switch">
+          <label>
+            Rotate
+            <input type="checkbox" id="rotate-switch">
+            <span class="lever"></span>
+          </label>
+        </div>
+      </div>
 
 
 
@@ -62,6 +65,9 @@
   <script src="js/init.js"></script>
 
   <script src="js/three/three.js"></script>
+  <script src="js/three/verb.js"></script>
+  <script src="js/three/verbToThreeConversion.js"></script>
+  <script src="js/three/threeBasic.js"></script>
   <script src="js/three/Detector.js"></script>
   <script src="js/three/THREEx.FullScreen.js"></script>
   <script src="js/three/THREEx.screenshot.js"></script>
@@ -74,15 +80,13 @@
   <script src="js/Design_A.js"></script>
 
   <script type="text/javascript">
-
-
-    var OLAP = new OLAPFramework(scene, $("#ui"));
+    var OLAP = new OLAPFramework();
     OLAP.openDesign(Design_A);
   </script>
   
-  <script src="js/OLAPVisualization.js"></script>
-  <script src="js/OLAPScene.js"></script>
-  <script src="js/scene.js"></script>
+<!--   <script src="js/OLAPVisualization.js"></script> -->
+<!--   <script src="js/OLAPScene.js"></script> -->
+<!--   <script src="js/scene.js"></script> -->
 
   </body>
 </html>

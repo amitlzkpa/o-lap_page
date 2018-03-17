@@ -8,23 +8,39 @@ function hasMethod(objToChk, methodName) {
 
 class OLAPFramework {
 	
-	constructor(scene, uiHook) {
+	constructor() {
 		this.scene = scene;
 		this.inputs = {};
-		this.$ui = uiHook;
+		this.$ui = $("#ui");
 		this.loadedDesign = null;
 		this.inputVals = {};
 		this.geometry = new THREE.Object3D();
+		this.debugGeom = new THREE.Object3D();
+
+	    $('#rotate-switch').on('change', function(e) {
+	      var isRot = $(this).is(':checked');
+	      cameraControls.autoRotate = isRot;
+	    });
 	}
 
 	openDesign(designObj) {
-		if(!hasMethod(designObj, ""))
+		if(!hasMethod(designObj, "onParamChange")) {
+			console.log("Design file needs to implement 'onParamChange' method to recieve updated parameter values.");
+			console.log("Aborting design open.");
+			return;
+		}
+		if(!hasMethod(designObj, "updateGeom")) {
+			console.log("Design file needs to implement 'updateGeom' method to trigger design regeneration.");
+			console.log("Aborting design open.");
+			return;
+		}
 
 
 
 		this.clearUI();
 		this.clearGeometry();
 		this.loadedDesign = designObj;
+		this.loadedDesign.init();
 		this.loadUI();
 		this.updateGeom();
 	}
@@ -50,9 +66,18 @@ class OLAPFramework {
 
 	updateGeom() {
 		this.scene.remove(this.geometry);
+		this.scene.remove(this.debugGeom);
 		this.geometry = new THREE.Object3D();
-		this.loadedDesign.onParamChange(this.inputVals, this.geometry);
+		this.debugGeom = new THREE.Object3D();
+		var inpStateCopy = {};													// make a copy of input state to pass it to design object
+		for(var key in this.inputVals) {
+		    var value = this.inputVals[key];
+		    inpStateCopy[key] = value;
+		}
+		this.loadedDesign.onParamChange(inpStateCopy, this.geometry);
+		this.loadedDesign.updateGeom_debug(this.debugGeom)
 		this.loadedDesign.updateGeom(this.geometry)
+		this.scene.add(this.debugGeom);
 		this.scene.add(this.geometry);
 	}
 
