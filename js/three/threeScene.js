@@ -37,7 +37,7 @@ function init(){
         1,
         10000
     );
-    camera.position.set( -60, 50, 60 );
+    camera.position.set( -2000, 800, 1200 );
     camera.lookAt( scene.position );
     scene.add( camera );
 

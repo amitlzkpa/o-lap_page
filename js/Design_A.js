@@ -46,6 +46,10 @@ Design_A.inputs = {
 
 
 
+Design_A.inputState = {}
+
+
+
 var matLine_black = new THREE.LineBasicMaterial({ linewidth: 4, color: 0x000000});
 
 
@@ -56,63 +60,119 @@ function get3Crv(ptArr, debugGroup) {
 	return line3;
 }
 
+function map_range(value, low1, high1, low2, high2) {
+    return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+}
 
 
-Design_A.inputState = {}
+
+var w_baseWidth = 120;
+var w_mul = 1;
+var w_innerMul = 1;
+var w_outerMul = 1.7;
+
+
+function updatePts() {
+	var wt = Design_A.inputState.weight;
+	var wtMin = Design_A.inputs.weight.min;
+	var wtMax = Design_A.inputs.weight.max;
+	var w_mul = map_range(wt, wtMin, wtMax, 1, 2);
+	var innerX = w_baseWidth * w_mul * w_innerMul;
+	var outerX = w_baseWidth * w_mul * w_outerMul;
+
+	i_bs_pts.forEach(d => d[0] = innerX);
+	i_bk_pts.forEach(d => d[0] = innerX);
+	i_tp_pts.forEach(d => d[0] = innerX);
+	i_st_pts.forEach(d => d[0] = innerX);
+	i_ft_pts.forEach(d => d[0] = innerX);
+
+	o_bs_pts.forEach(d => d[0] = outerX);
+	o_bk_pts.forEach(d => d[0] = outerX);
+	o_tp_pts.forEach(d => d[0] = outerX);
+	o_st_pts.forEach(d => d[0] = outerX);
+	o_ft_pts.forEach(d => d[0] = outerX);
+}
+
+
 
 
 
 // inner profile
-var i_bs_p1 = [1, 0, 0];
-var i_bs_p2 = [1, 0, -7];
-var i_bs_p3 = [1, 0, -20];
+var i_bs_pts = [];
+i_bs_pts[0] = [180, 0, 0];
+i_bs_pts[1] = [180, 0, 252];
+i_bs_pts[2] = [180, 0, 505];
 
 
-var i_bk_p1 = [1, 0, -20];
-var i_bk_p2 = [1, 16, -22];
-var i_bk_p3 = [1, 20, -21];
+var i_bk_pts = [];
+i_bk_pts[0] = [180, 0, 505];
+i_bk_pts[1] = [180, 300, 640];
+i_bk_pts[2] = [180, 632, 636];
 
 
-var i_tp_p1 = [1, 20, -21];
-var i_tp_p2 = [1, 21, -19];
-var i_tp_p3 = [1, 20, -17];
+var i_tp_pts = [];
+i_tp_pts[0] = [180, 632, 636];
+i_tp_pts[1] = [180, 670, 577];
+i_tp_pts[2] = [180, 620, 522];
 
 
-var i_st_p1 = [1, 20, -17];
-var i_st_p2 = [1, 10, -14];
-var i_st_p3 = [1, 8, -2];
+var i_st_pts = [];
+i_st_pts[0] = [180, 620, 522];
+i_st_pts[1] = [180, 285, 366];
+i_st_pts[2] = [180, 296, 14];
 
 
-var i_ft_p1 = [1, 8, -2];
-var i_ft_p2 = [1, 8, 1];
-var i_ft_p3 = [1, 0, 0];
+var i_ft_pts = [];
+i_ft_pts[0] = [180, 296, 14];
+i_ft_pts[1] = [180, 256, -63];
+i_ft_pts[2] = [180, 0, 0];
 
 
 
 // outer profile
-var o_bs_p1 = [12, 0, 1];
-var o_bs_p2 = [12, 0, -8];
-var o_bs_p3 = [12, 0, -21];
+var o_bs_pts = [];
+o_bs_pts[0] = [320, 0, 0];
+o_bs_pts[1] = [320, 0, 240];
+o_bs_pts[2] = [320, 0, 480];
 
 
-var o_bk_p1 = [12, 0, -21];
-var o_bk_p2 = [12, 16, -23];
-var o_bk_p3 = [12, 20, -22];
+var o_bk_pts = [];
+o_bk_pts[0] = [320, 0, 480];
+o_bk_pts[1] = [320, 340, 610];
+o_bk_pts[2] = [320, 707, 594];
 
 
-var o_tp_p1 = [12, 20, -22];
-var o_tp_p2 = [12, 21, -20];
-var o_tp_p3 = [12, 20, -18];
+var o_tp_pts = [];
+o_tp_pts[0] = [320, 707, 594];
+o_tp_pts[1] = [320, 765, 515];
+o_tp_pts[2] = [320, 707, 465];
 
 
-var o_st_p1 = [12, 20, -18];
-var o_st_p2 = [12, 10, -15];
-var o_st_p3 = [12, 8, -3];
+var o_st_pts = [];
+o_st_pts[0] = [320, 707, 465];
+o_st_pts[1] = [320, 303, 330];
+o_st_pts[2] = [320, 320, 13];
 
 
-var o_ft_p1 = [12, 8, -3];
-var o_ft_p2 = [12, 8, 2];
-var o_ft_p3 = [12, 0, 1];
+var o_ft_pts = [];
+o_ft_pts[0] = [320, 320, 13];
+o_ft_pts[1] = [320, 205, -75];
+o_ft_pts[2] = [320, 0, 0];
+
+
+
+var i_bs_pts_mirr = [];
+var i_bk_pts_mirr = [];
+var i_tp_pts_mirr = [];
+var i_st_pts_mirr = [];
+var i_ft_pts_mirr = [];
+
+var o_bs_pts_mirr = [];
+var o_bk_pts_mirr = [];
+var o_tp_pts_mirr = [];
+var o_st_pts_mirr = [];
+var o_ft_pts_mirr = [];
+
 
 
 Design_A.init = function() {
@@ -122,7 +182,7 @@ Design_A.init = function() {
 
 Design_A.onParamChange = function(params, group) {
 	this.inputState = params;
-	// i_st_p2[1] = params.age;
+	updatePts();
 }
 
 
@@ -140,39 +200,50 @@ Design_A.updateGeom = function(group) {
 
 Design_A.updateGeom_debug = function(debugGroup) {
 
-	var ptArr;
+	var obj = new THREE.Object3D();
 
-	ptArr = [i_bs_p1, i_bs_p2, i_bs_p3];
-	debugGroup.add( get3Crv(ptArr) );
+	obj.add( get3Crv(i_bs_pts) );
+	obj.add( get3Crv(i_bk_pts) );
+	obj.add( get3Crv(i_tp_pts) );
+	obj.add( get3Crv(i_st_pts) );
+	obj.add( get3Crv(i_ft_pts) );
 
-	ptArr = [i_bk_p1, i_bk_p2, i_bk_p3];
-	debugGroup.add( get3Crv(ptArr) );
+	obj.add( get3Crv(o_bs_pts) );
+	obj.add( get3Crv(o_bk_pts) );
+	obj.add( get3Crv(o_tp_pts) );
+	obj.add( get3Crv(o_st_pts) );
+	obj.add( get3Crv(o_ft_pts) );
 
-	ptArr = [i_tp_p1, i_tp_p2, i_tp_p3];
-	debugGroup.add( get3Crv(ptArr) );
+	i_bs_pts.forEach(d => d[0] = -d[0]);
+	i_bk_pts.forEach(d => d[0] = -d[0]);
+	i_tp_pts.forEach(d => d[0] = -d[0]);
+	i_st_pts.forEach(d => d[0] = -d[0]);
+	i_ft_pts.forEach(d => d[0] = -d[0]);
 
-	ptArr = [i_st_p1, i_st_p2, i_st_p3];
-	debugGroup.add( get3Crv(ptArr) );
+	o_bs_pts.forEach(d => d[0] = -d[0]);
+	o_bk_pts.forEach(d => d[0] = -d[0]);
+	o_tp_pts.forEach(d => d[0] = -d[0]);
+	o_st_pts.forEach(d => d[0] = -d[0]);
+	o_ft_pts.forEach(d => d[0] = -d[0]);
 
-	ptArr = [i_ft_p1, i_ft_p2, i_ft_p3];
-	debugGroup.add( get3Crv(ptArr) );
+	obj.add( get3Crv(i_bs_pts) );
+	obj.add( get3Crv(i_bk_pts) );
+	obj.add( get3Crv(i_tp_pts) );
+	obj.add( get3Crv(i_st_pts) );
+	obj.add( get3Crv(i_ft_pts) );
 
+	obj.add( get3Crv(o_bs_pts) );
+	obj.add( get3Crv(o_bk_pts) );
+	obj.add( get3Crv(o_tp_pts) );
+	obj.add( get3Crv(o_st_pts) );
+	obj.add( get3Crv(o_ft_pts) );
 
+	console.log(obj.scale);
+	obj.scale.set( this.inputState.age/10, this.inputState.age/10, this.inputState.age/10 );
+	console.log(obj.scale);
+	console.log('------');
 
-	ptArr = [o_bs_p1, o_bs_p2, o_bs_p3];
-	debugGroup.add( get3Crv(ptArr) );
-
-	ptArr = [o_bk_p1, o_bk_p2, o_bk_p3];
-	debugGroup.add( get3Crv(ptArr) );
-
-	ptArr = [o_tp_p1, o_tp_p2, o_tp_p3];
-	debugGroup.add( get3Crv(ptArr) );
-
-	ptArr = [o_st_p1, o_st_p2, o_st_p3];
-	debugGroup.add( get3Crv(ptArr) );
-
-	ptArr = [o_ft_p1, o_ft_p2, o_ft_p3];
-	debugGroup.add( get3Crv(ptArr) );
+	debugGroup.add(obj);
 
 }
 
