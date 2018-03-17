@@ -12,30 +12,25 @@ class OLAPFramework {
 		this.scene = scene;
 		this.inputs = {};
 		this.$ui = uiHook;
-		this.geometry = null;
-
-        // this.frameUpdateListeners = [];
+		this.loadedDesign = null;
+		this.inputVals = {};
+		this.geometry = new THREE.Object3D();
 	}
 
 	openDesign(designObj) {
-		this.clearGeometry();
-		this.openGeometry(designObj);
+		if(!hasMethod(designObj, ""))
+
+
+
 		this.clearUI();
-		this.updateUI(designObj);
-		// register new inputs
-			// hook inputs to geometry and ui
+		this.clearGeometry();
+		this.loadedDesign = designObj;
+		this.loadUI();
+		this.updateGeom();
 	}
 
 	clearUI() {
 		this.$ui.empty();
-	}
-
-	updateUI(designObj) {
-		var params = designObj.inputs.params;
-		for (let param of params) {
-			this.addUIItem(designObj.inputs[param], param);
-			this.$ui.append('<div class="divider"></div>');
-		}
 	}
 
 	clearGeometry() {
@@ -44,21 +39,26 @@ class OLAPFramework {
 		this.geometry = null;
 	}
 
-	openGeometry(designObj) {
-		var group = new THREE.Group();
+	loadUI() {
+		var params = this.loadedDesign.inputs.params;
+		for (let param of params) {
+			this.inputVals[param] = this.loadedDesign.inputs[param].default;	// put the default value into curr state
+			this.addUIItem(this.loadedDesign.inputs[param], param);				// add the ui item
+			this.$ui.append('<div class="divider"></div>');
+		}
+	}
 
-		var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
-		var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-		var cubeA = new THREE.Mesh( geometry, material );
-		cubeA.position.set( 0, 0, 0 );
-		group.add(cubeA);
-
-		this.scene.add(group);
+	updateGeom() {
+		this.scene.remove(this.geometry);
+		this.geometry = new THREE.Object3D();
+		this.loadedDesign.onParamChange(this.inputVals, this.geometry);
+		this.loadedDesign.updateGeom(this.geometry)
+		this.scene.add(this.geometry);
 	}
 
 	addUIItem(inpConfig, id) {
 		if (typeof inpConfig === 'undefined' || typeof inpConfig.type === 'undefined') {
-			// console.log("Foll registered input doesn't have config: " + id + cnt);
+			console.log("Foll registered input doesn't have config: " + id + cnt);
 			return;
 		}
 		switch(inpConfig.type) {
@@ -67,23 +67,27 @@ class OLAPFramework {
 				for(let s of inpConfig.choices) { html += `<option value="${s}">${s}</option>\n`; }
 				html += `</select><label>${inpConfig.label}</label></div>\n`;
 				var p = this.$ui.append(html);
-				$('select').formSelect();
+				$('select').formSelect();										// materilize initialization
+				var fw = this;													// cache ref to framework for passing it to the event listening registration
 				p.find('#' + id).on('change',function(e){
-					console.log($('#'+id + ' :selected').text());
+					fw.inputVals[id] = $('#'+id + ' :selected').text();			// update curr state
+					fw.updateGeom();											// trigger an update
 				});
 				break;
 			case "slider":
 				var html = `
-						    <p class="range-field">
+						    <div class="range-field">
 							  <p>${inpConfig.label}</p>
 							  <span class="left">${inpConfig.min}</span>
 							  <span class="right">${inpConfig.max}</span>
 						      <input type="range" min="${inpConfig.min}" max="${inpConfig.max}" id="${id}" />
-						    </p>
+						    </div>
 							`;
 				var q = this.$ui.append(html);
+				var fw = this;													// cache ref to framework for passing it to the event listening registration
 				q.find('#' + id).on('input',function(e){
-					console.log($(this).val());
+					fw.inputVals[id] = $(this).val();							// update curr state
+					fw.updateGeom();											// trigger an update
 				});
 				break;
 			case "bool":
@@ -96,15 +100,13 @@ class OLAPFramework {
 						    </p>
 						    `;
 				var r = this.$ui.append(html);
+				var fw = this;													// cache ref to framework for passing it to the event listening registration
 				r.find("#" + id).on('change',function(e){
-					console.log($(this).is(":checked"));
+					fw.inputVals[id] = $(this).is(":checked");					// update curr state
+					fw.updateGeom();											// trigger an update
 				});
 				break;
 		}
-	}
-
-	passOnChange(id, newVal) {
-		console.log('ssss');
 	}
 
 	// beforeFrameUpdate() {
@@ -136,4 +138,10 @@ class OLAPFramework {
 	// }
 
 }
+
+
+
+// OLAPFramework.prototype.updateGeom = function() {
+// 	console.log('aaaaaaaa');
+// }
 

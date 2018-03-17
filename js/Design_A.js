@@ -9,7 +9,7 @@ var Design_A = new OLAPDesignObject();
 
 Design_A.inputs = {
 
-	"params": ["age", "weight", "high-back", "foo", "roo"],
+	"params": ["age", "weight", "high-back", "colour", "roo"],
 
 	"age": { 
 		"type": "slider",
@@ -30,11 +30,11 @@ Design_A.inputs = {
 		"label": "High-back",
 		"default": false
 	},
-	"foo": {
+	"colour": {
 		"type": "select",
-		"label": "Fooey",
-		"default": "b",
-		"choices": ["a", "b", "c"]
+		"label": "Colour",
+		"default": "red",
+		"choices": ["red", "blue", "green"]
 	},
 	"roo": {
 		"type": "select",
@@ -42,6 +42,26 @@ Design_A.inputs = {
 		"default": "x",
 		"choices": ["x", "y", "z"]
 	}
+}
+
+
+
+
+Design_A.onParamChange = function(params, group) {
+		var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
+		var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+		var cubeA = new THREE.Mesh( geometry, material );
+		cubeA.position.set( params.weight, params.age, 0 );
+		group.add(cubeA);
+
+		// console.log(params);
+}
+
+
+
+
+Design_A.updateGeom = function(group) {
+	
 }
 
 

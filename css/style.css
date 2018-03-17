@@ -14,6 +14,10 @@
 }
 
 
+body {
+	font-size: 2.5em;
+}
+
 
 #banner {
 	background-image: url('../imgs/wide_banner.gif');
@@ -23,30 +27,30 @@
 
 
 .ht-100 {
-	height: 100px;
+	min-height: 100px;
 }
 
 
 .ht-200 {
-	height: 200px;
+	min-height: 200px;
 }
 
 
 .ht-300 {
-	height: 300px;
+	min-height: 300px;
 }
 
 
 .ht-400 {
-	height: 400px;
+	min-height: 400px;
 }
 
 
 .ht-500 {
-	height: 500px;
+	min-height: 500px;
 }
 
 
 .ht-600 {
-	height: 600px;
+	min-height: 600px;
 }
