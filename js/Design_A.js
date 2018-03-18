@@ -51,13 +51,20 @@ Design_A.inputState = {}
 
 
 var matLine_black = new THREE.LineBasicMaterial({ linewidth: 4, color: 0x000000});
+var matMesh_default = new THREE.MeshNormalMaterial( { side: THREE.DoubleSide, wireframe: false, shading: THREE.SmoothShading, transparent: true, opacity: 0.4 });
 
 
-
-function get3Crv(ptArr, debugGroup) {
+function get3Crv(ptArr) {
 	var crv = verb.geom.NurbsCurve.byPoints( ptArr, 2 );
 	var line3 = new THREE.Line( crv.toThreeGeometry(), matLine_black );
 	return line3;
+}
+
+
+function get3Mesh(crvArr) {
+	var nSrf = verb.geom.NurbsSurface.byLoftingCurves( crvArr, 2 );
+	var mesh3 = new THREE.Mesh( nSrf.toThreeGeometry(), matMesh_default );
+	return mesh3;
 }
 
 
@@ -68,6 +75,7 @@ function map_range(value, low1, high1, low2, high2, interp="lin") {
 
 
 
+// http://www.wolframalpha.com/examples/math/algebra/polynomials/
 // quadratic functions
 
 // 30 -> 1	|	60 -> 1.02	|	120 -> 1.2		|	150 -> 1.4
@@ -86,6 +94,9 @@ function getAgeMul(age) {
 var w_mul = 1;
 var w_innerMul = 1;
 var w_outerMul = 1.7;
+
+var ht_add_y = 0;
+var ht_add_z = 0;
 
 
 function updatePts() {
@@ -118,6 +129,52 @@ function updatePts() {
 	o_tp_pts_mirr.forEach((d, i) => { d[0] = o_tp_pts_mirr_start[i][0] * sc; d[1] = o_tp_pts_mirr_start[i][1] * sc; d[2] = o_tp_pts_mirr_start[i][2] * sc; });
 	o_st_pts_mirr.forEach((d, i) => { d[0] = o_st_pts_mirr_start[i][0] * sc; d[1] = o_st_pts_mirr_start[i][1] * sc; d[2] = o_st_pts_mirr_start[i][2] * sc; });
 	o_ft_pts_mirr.forEach((d, i) => { d[0] = o_ft_pts_mirr_start[i][0] * sc; d[1] = o_ft_pts_mirr_start[i][1] * sc; d[2] = o_ft_pts_mirr_start[i][2] * sc; });
+
+
+
+	// high-back alterations
+	ht_add_y = Design_A.inputState["high-back"] ? 120 : 0;
+	ht_add_z = Design_A.inputState["high-back"] ? 40 : 0;
+
+	// move end of base-curve back to give more grounding
+	i_bs_pts[2][2] += ht_add_z;
+	o_bs_pts[2][2] += ht_add_z;
+	i_bs_pts_mirr[2][2] += ht_add_z;
+	o_bs_pts_mirr[2][2] += ht_add_z;
+	i_bk_pts[0][2] += ht_add_z;
+	o_bk_pts[0][2] += ht_add_z;
+	i_bk_pts_mirr[0][2] += ht_add_z;
+	o_bk_pts_mirr[0][2] += ht_add_z;
+
+	// move back curve up and back
+	i_bk_pts[1][1] += ht_add_y; i_bk_pts[1][2] += ht_add_z;
+	i_bk_pts[2][1] += ht_add_y; i_bk_pts[2][2] += ht_add_z;
+	o_bk_pts[1][1] += ht_add_y; o_bk_pts[1][2] += ht_add_z;
+	o_bk_pts[2][1] += ht_add_y; o_bk_pts[2][2] += ht_add_z;
+	i_bk_pts_mirr[1][1] += ht_add_y; i_bk_pts_mirr[1][2] += ht_add_z;
+	i_bk_pts_mirr[2][1] += ht_add_y; i_bk_pts_mirr[2][2] += ht_add_z;
+	o_bk_pts_mirr[1][1] += ht_add_y; o_bk_pts_mirr[1][2] += ht_add_z;
+	o_bk_pts_mirr[2][1] += ht_add_y; o_bk_pts_mirr[2][2] += ht_add_z;
+
+	// move top-curve full up and back
+	i_tp_pts[0][1] += ht_add_y; i_tp_pts[0][2] += ht_add_z;
+	i_tp_pts[1][1] += ht_add_y; i_tp_pts[1][2] += ht_add_z;
+	i_tp_pts[2][1] += ht_add_y; i_tp_pts[2][2] += ht_add_z;
+	o_tp_pts[0][1] += ht_add_y; o_tp_pts[0][2] += ht_add_z;
+	o_tp_pts[1][1] += ht_add_y; o_tp_pts[1][2] += ht_add_z;
+	o_tp_pts[2][1] += ht_add_y; o_tp_pts[2][2] += ht_add_z;
+	i_tp_pts_mirr[0][1] += ht_add_y; i_tp_pts_mirr[0][2] += ht_add_z;
+	i_tp_pts_mirr[1][1] += ht_add_y; i_tp_pts_mirr[1][2] += ht_add_z;
+	i_tp_pts_mirr[2][1] += ht_add_y; i_tp_pts_mirr[2][2] += ht_add_z;
+	o_tp_pts_mirr[0][1] += ht_add_y; o_tp_pts_mirr[0][2] += ht_add_z;
+	o_tp_pts_mirr[1][1] += ht_add_y; o_tp_pts_mirr[1][2] += ht_add_z;
+	o_tp_pts_mirr[2][1] += ht_add_y; o_tp_pts_mirr[2][2] += ht_add_z;
+
+	// move only top of seat curve up and back
+	i_st_pts[0][1] += ht_add_y; i_st_pts[0][2] += ht_add_z;
+	o_st_pts[0][1] += ht_add_y; o_st_pts[0][2] += ht_add_z;
+	i_st_pts_mirr[0][1] += ht_add_y; i_st_pts_mirr[0][2] += ht_add_z;
+	o_st_pts_mirr[0][1] += ht_add_y; o_st_pts_mirr[0][2] += ht_add_z;
 
 
 
@@ -196,34 +253,34 @@ var o_ft_pts_mirr_start = [		[-320, 320, 13],	[-320, 205, -75],	[-320, 0, 0]		];
 
 
 // inner profile
-var i_bs_pts = [ 	[180, 0, 0], 		[180, 0, 252], 		[180, 0, 505] 		];
-var i_bk_pts = [ 	[180, 0, 505], 		[180, 300, 640], 	[180, 632, 636] 	];
-var i_tp_pts = [	[180, 632, 636], 	[180, 670, 577], 	[180, 620, 522] 	];
-var i_st_pts = [	[180, 620, 522], 	[180, 285, 366], 	[180, 296, 14]		];
-var i_ft_pts = [	[180, 296, 14], 	[180, 256, -63],	[180, 0, 0]			];
+var i_bs_pts = JSON.parse(JSON.stringify(i_bs_pts_start));
+var i_bk_pts = JSON.parse(JSON.stringify(i_bk_pts_start));
+var i_tp_pts = JSON.parse(JSON.stringify(i_tp_pts_start));
+var i_st_pts = JSON.parse(JSON.stringify(i_st_pts_start));
+var i_ft_pts = JSON.parse(JSON.stringify(i_ft_pts_start));
 
 
 // outer profile
-var o_bs_pts = [	[320, 0, 0], 		[320, 0, 240],		[320, 0, 480]		];
-var o_bk_pts = [	[320, 0, 480],		[320, 340, 610],	[320, 707, 594]		];
-var o_tp_pts = [	[320, 707, 594],	[320, 765, 515],	[320, 707, 465]		];
-var o_st_pts = [	[320, 707, 465],	[320, 303, 330],	[320, 320, 13]		];
-var o_ft_pts = [	[320, 320, 13],		[320, 205, -75],	[320, 0, 0]			];
+var o_bs_pts = JSON.parse(JSON.stringify(o_bs_pts_start));
+var o_bk_pts = JSON.parse(JSON.stringify(o_bk_pts_start));
+var o_tp_pts = JSON.parse(JSON.stringify(o_tp_pts_start));
+var o_st_pts = JSON.parse(JSON.stringify(o_st_pts_start));
+var o_ft_pts = JSON.parse(JSON.stringify(o_ft_pts_start));
 
 
 
-var i_bs_pts_mirr = [ 	[-180, 0, 0], 		[-180, 0, 252], 	[-180, 0, 505] 		];
-var i_bk_pts_mirr = [ 	[-180, 0, 505], 	[-180, 300, 640], 	[-180, 632, 636] 	];
-var i_tp_pts_mirr = [	[-180, 632, 636], 	[-180, 670, 577], 	[-180, 620, 522] 	];
-var i_st_pts_mirr = [	[-180, 620, 522], 	[-180, 285, 366], 	[-180, 296, 14]		];
-var i_ft_pts_mirr = [	[-180, 296, 14], 	[-180, 256, -63],	[-180, 0, 0]		];
+var i_bs_pts_mirr =JSON.parse(JSON.stringify(i_bs_pts_mirr_start));
+var i_bk_pts_mirr = JSON.parse(JSON.stringify(i_bk_pts_mirr_start));
+var i_tp_pts_mirr = JSON.parse(JSON.stringify(i_tp_pts_mirr_start));
+var i_st_pts_mirr = JSON.parse(JSON.stringify(i_st_pts_mirr_start));
+var i_ft_pts_mirr = JSON.parse(JSON.stringify(i_ft_pts_mirr_start));
 
 
-var o_bs_pts_mirr = [	[-320, 0, 0], 		[-320, 0, 240],		[-320, 0, 480]		];
-var o_bk_pts_mirr = [	[-320, 0, 480],		[-320, 340, 610],	[-320, 707, 594]	];
-var o_tp_pts_mirr = [	[-320, 707, 594],	[-320, 765, 515],	[-320, 707, 465]	];
-var o_st_pts_mirr = [	[-320, 707, 465],	[-320, 303, 330],	[-320, 320, 13]		];
-var o_ft_pts_mirr = [	[-320, 320, 13],	[-320, 205, -75],	[-320, 0, 0]		];
+var o_bs_pts_mirr = JSON.parse(JSON.stringify(o_bs_pts_mirr_start));
+var o_bk_pts_mirr = JSON.parse(JSON.stringify(o_bk_pts_mirr_start));
+var o_tp_pts_mirr = JSON.parse(JSON.stringify(o_tp_pts_mirr_start));
+var o_st_pts_mirr = JSON.parse(JSON.stringify(o_st_pts_mirr_start));
+var o_ft_pts_mirr = JSON.parse(JSON.stringify(o_ft_pts_mirr_start));
 
 
 
@@ -259,36 +316,113 @@ Design_A.updateGeom_debug = function(debugGroup) {
 
 	var obj = new THREE.Object3D();
 
-	obj.add( get3Crv(i_bs_pts) );
-	obj.add( get3Crv(i_bk_pts) );
-	obj.add( get3Crv(i_tp_pts) );
-	obj.add( get3Crv(i_st_pts) );
-	obj.add( get3Crv(i_ft_pts) );
 
-	obj.add( get3Crv(o_bs_pts) );
-	obj.add( get3Crv(o_bk_pts) );
-	obj.add( get3Crv(o_tp_pts) );
-	obj.add( get3Crv(o_st_pts) );
-	obj.add( get3Crv(o_ft_pts) );
+	// add curves
+	var i_bs = get3Crv(i_bs_pts);
+	var i_bk = get3Crv(i_bk_pts);
+	var i_tp = get3Crv(i_tp_pts);
+	var i_st = get3Crv(i_st_pts);
+	var i_ft = get3Crv(i_ft_pts);
 
-	obj.add( get3Crv(i_bs_pts_mirr) );
-	obj.add( get3Crv(i_bk_pts_mirr) );
-	obj.add( get3Crv(i_tp_pts_mirr) );
-	obj.add( get3Crv(i_st_pts_mirr) );
-	obj.add( get3Crv(i_ft_pts_mirr) );
+	var o_bs = get3Crv(o_bs_pts);
+	var o_bk = get3Crv(o_bk_pts);
+	var o_tp = get3Crv(o_tp_pts);
+	var o_st = get3Crv(o_st_pts);
+	var o_ft = get3Crv(o_ft_pts);
 
-	obj.add( get3Crv(o_bs_pts_mirr) );
-	obj.add( get3Crv(o_bk_pts_mirr) );
-	obj.add( get3Crv(o_tp_pts_mirr) );
-	obj.add( get3Crv(o_st_pts_mirr) );
-	obj.add( get3Crv(o_ft_pts_mirr) );
+	var i_bs_mirr = get3Crv(i_bs_pts_mirr);
+	var i_bk_mirr = get3Crv(i_bk_pts_mirr);
+	var i_tp_mirr = get3Crv(i_tp_pts_mirr);
+	var i_st_mirr = get3Crv(i_st_pts_mirr);
+	var i_ft_mirr = get3Crv(i_ft_pts_mirr);
 
-	// console.log(obj.scale);
-	// obj.scale.set( this.inputState.age/10, this.inputState.age/10, this.inputState.age/10 );
-	// console.log(obj.scale);
-	// console.log('------');
+	var o_bs_mirr = get3Crv(o_bs_pts_mirr);
+	var o_bk_mirr = get3Crv(o_bk_pts_mirr);
+	var o_tp_mirr = get3Crv(o_tp_pts_mirr);
+	var o_st_mirr = get3Crv(o_st_pts_mirr);
+	var o_ft_mirr = get3Crv(o_ft_pts_mirr);
+
+	obj.add(i_bs);
+	obj.add(i_bk);
+	obj.add(i_tp);
+	obj.add(i_st);
+	obj.add(i_ft);
+
+	obj.add(o_bs);
+	obj.add(o_bk);
+	obj.add(o_tp);
+	obj.add(o_st);
+	obj.add(o_ft);
+
+	obj.add(i_bs_mirr);
+	obj.add(i_bk_mirr);
+	obj.add(i_tp_mirr);
+	obj.add(i_st_mirr);
+	obj.add(i_ft_mirr);
+
+	obj.add(o_bs_mirr);
+	obj.add(o_bk_mirr);
+	obj.add(o_tp_mirr);
+	obj.add(o_st_mirr);
+	obj.add(o_ft_mirr);
 
 	debugGroup.add(obj);
+
+
+
+
+	// add surfaces
+	var curves;
+
+	curves = 	[
+					verb.geom.NurbsCurve.byPoints( o_bs_pts, 2 ),
+					verb.geom.NurbsCurve.byPoints( i_bs_pts, 2 ),
+					verb.geom.NurbsCurve.byPoints( i_bs_pts_mirr, 2 ),
+					verb.geom.NurbsCurve.byPoints( o_bs_pts_mirr, 2 )
+				];
+	var srf_bs = get3Mesh(curves);
+
+	curves = 	[
+					verb.geom.NurbsCurve.byPoints( o_bk_pts, 2 ),
+					verb.geom.NurbsCurve.byPoints( i_bk_pts, 2 ),
+					verb.geom.NurbsCurve.byPoints( i_bk_pts_mirr, 2 ),
+					verb.geom.NurbsCurve.byPoints( o_bk_pts_mirr, 2 )
+				];
+	var srf_bk = get3Mesh(curves);
+
+	curves = 	[
+					verb.geom.NurbsCurve.byPoints( o_tp_pts, 2 ),
+					verb.geom.NurbsCurve.byPoints( i_tp_pts, 2 ),
+					verb.geom.NurbsCurve.byPoints( i_tp_pts_mirr, 2 ),
+					verb.geom.NurbsCurve.byPoints( o_tp_pts_mirr, 2 )
+				];
+	var srf_tp = get3Mesh(curves);
+
+	curves = 	[
+					verb.geom.NurbsCurve.byPoints( o_st_pts, 2 ),
+					verb.geom.NurbsCurve.byPoints( i_st_pts, 2 ),
+					verb.geom.NurbsCurve.byPoints( i_st_pts_mirr, 2 ),
+					verb.geom.NurbsCurve.byPoints( o_st_pts_mirr, 2 )
+				];
+	var srf_st = get3Mesh(curves);
+
+	curves = 	[
+					verb.geom.NurbsCurve.byPoints( o_ft_pts, 2 ),
+					verb.geom.NurbsCurve.byPoints( i_ft_pts, 2 ),
+					verb.geom.NurbsCurve.byPoints( i_ft_pts_mirr, 2 ),
+					verb.geom.NurbsCurve.byPoints( o_ft_pts_mirr, 2 )
+				];
+	var srf_ft = get3Mesh(curves);
+
+	debugGroup.add(srf_bs);
+	debugGroup.add(srf_bk);
+	debugGroup.add(srf_tp);
+	debugGroup.add(srf_st);
+	debugGroup.add(srf_ft);
+
+
+
+
 
 }
 
