@@ -101,11 +101,14 @@ var ht_add_z = 0;
 
 function updatePts() {
 
+	// age alterations - scale the whole design by a factor depending on age
 	var age = Design_A.inputState.age;
 	var agemin = Design_A.inputs.age.min;
 	var agemax = Design_A.inputs.age.max;
+	// scale factor is non-linear and follows a quadratic curve
 	var sc = getAgeMul(age);
 
+	// scale all points by value
 	i_bs_pts.forEach((d, i) => { d[0] = i_bs_pts_start[i][0] * sc; d[1] = i_bs_pts_start[i][1] * sc; d[2] = i_bs_pts_start[i][2] * sc; });
 	i_bk_pts.forEach((d, i) => { d[0] = i_bk_pts_start[i][0] * sc; d[1] = i_bk_pts_start[i][1] * sc; d[2] = i_bk_pts_start[i][2] * sc; });
 	i_tp_pts.forEach((d, i) => { d[0] = i_tp_pts_start[i][0] * sc; d[1] = i_tp_pts_start[i][1] * sc; d[2] = i_tp_pts_start[i][2] * sc; });
@@ -132,7 +135,8 @@ function updatePts() {
 
 
 
-	// high-back alterations
+	// high-back alterations - move certain parts of base, back, top and seat curve backwards and upwards
+	// (move it back to avoid the feeling of sitting against a vertical wall) 
 	ht_add_y = Design_A.inputState["high-back"] ? 120 : 0;
 	ht_add_z = Design_A.inputState["high-back"] ? 40 : 0;
 
@@ -178,9 +182,11 @@ function updatePts() {
 
 
 
+	// weight alterations - alters the width of the chair and sink
 	var wt = Design_A.inputState.weight;
 	var wtMin = Design_A.inputs.weight.min;
 	var wtMax = Design_A.inputs.weight.max;
+	// dispalcement factor is non-linear and follows a quadratic curve
 	var w_mul = getWeightMul(wt);
 	var innerX = i_bs_pts[0][0] * w_mul * w_innerMul;
 	var outerX = i_bs_pts[0][0] * w_mul * w_outerMul;
