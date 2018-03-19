@@ -50,12 +50,14 @@ Design_A.inputState = {}
 
 
 
-var matLine_black = new THREE.LineBasicMaterial({ linewidth: 4, color: 0x000000});
+var matLine_black = new THREE.LineBasicMaterial({ linewidth: 80, color: 0x000000, linecap: 'round', linejoin:  'round' });
+var matLine_white = new THREE.LineBasicMaterial({ linewidth: 80, color: 0xffffff, linecap: 'round', linejoin:  'round' });
 var matMesh_debug = new THREE.MeshNormalMaterial( { side: THREE.DoubleSide, wireframe: false, shading: THREE.SmoothShading, transparent: true, opacity: 0.4 });
 
 var matMesh_red = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, shading: THREE.SmoothShading, color: 0xd32f2f, specular: 0x010101, } );
 var matMesh_blue = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, shading: THREE.SmoothShading, color: 0x01579b, specular: 0x010101, } );
 var matMesh_green = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, shading: THREE.SmoothShading, color: 0x33691e, specular: 0x010101, } );
+var matMesh_wirewhite = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } );
 
 
 function map_range(value, low1, high1, low2, high2, interp="lin") {
@@ -416,21 +418,24 @@ Design_A.updateGeom_debug = function(debugGroup) {
 
 
 
-
-	var nSrf = verb.geom.NurbsSurface.byLoftingCurves( curves, 2 );
-	var s = nSrf.isocurve( 0.5, true );
-	// console.log(s);
-	addCurveToScene(s.toThreeGeometry());
-    // nSrf.isocurveSync( 0.5, true ).then(function(x){
-    //     addCurveToScene( x.toThreeGeometry() );
-    // });
-
 	obj.add(new THREE.Mesh( srf_bs.toThreeGeometry(), activeMat ));
 	obj.add(new THREE.Mesh( srf_bk.toThreeGeometry(), activeMat ));
 	obj.add(new THREE.Mesh( srf_tp.toThreeGeometry(), activeMat ));
 	obj.add(new THREE.Mesh( srf_st.toThreeGeometry(), activeMat ));
 	obj.add(new THREE.Mesh( srf_ft.toThreeGeometry(), activeMat ));
 
+	// obj.add(new THREE.Mesh( srf_bs.toThreeGeometry(), matMesh_wirewhite ));
+	// obj.add(new THREE.Mesh( srf_bk.toThreeGeometry(), matMesh_wirewhite ));
+	// obj.add(new THREE.Mesh( srf_tp.toThreeGeometry(), matMesh_wirewhite ));
+	// obj.add(new THREE.Mesh( srf_st.toThreeGeometry(), matMesh_wirewhite ));
+	// obj.add(new THREE.Mesh( srf_ft.toThreeGeometry(), matMesh_wirewhite ));
+
+
+	getIsoCurves(srf_bs, 4).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
+	getIsoCurves(srf_bk, 4).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
+	getIsoCurves(srf_tp, 4).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
+	getIsoCurves(srf_st, 4).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
+	getIsoCurves(srf_ft, 4).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
 
 
 	debugGroup.add(obj);
@@ -441,3 +446,17 @@ Design_A.updateGeom_debug = function(debugGroup) {
 
 
 
+
+
+
+function getIsoCurves(srf, divs) {
+	var ret = [];
+	var l = 1/divs;
+	for (let i=0; i<1; i+=l) {
+		ret.push(srf.isocurve(i, true));
+	}
+	for (let i=0; i<1; i+=l) {
+		ret.push(srf.isocurve(i, false));
+	}
+	return ret;
+}
