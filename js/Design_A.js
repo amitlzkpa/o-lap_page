@@ -34,7 +34,7 @@ Design_A.inputs = {
 		"type": "select",
 		"label": "Colour",
 		"default": "red",
-		"choices": ["red", "blue", "green"]
+		"choices": ["Red", "Blue", "Green"]
 	},
 	"roo": {
 		"type": "select",
@@ -51,7 +51,11 @@ Design_A.inputState = {}
 
 
 var matLine_black = new THREE.LineBasicMaterial({ linewidth: 4, color: 0x000000});
-var matMesh_default = new THREE.MeshNormalMaterial( { side: THREE.DoubleSide, wireframe: false, shading: THREE.SmoothShading, transparent: true, opacity: 0.4 });
+var matMesh_debug = new THREE.MeshNormalMaterial( { side: THREE.DoubleSide, wireframe: false, shading: THREE.SmoothShading, transparent: true, opacity: 0.4 });
+
+var matMesh_red = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, shading: THREE.SmoothShading, color: 0xd32f2f, specular: 0x010101, } );
+var matMesh_blue = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, shading: THREE.SmoothShading, color: 0x01579b, specular: 0x010101, } );
+var matMesh_green = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, shading: THREE.SmoothShading, color: 0x33691e, specular: 0x010101, } );
 
 
 function get3Crv(ptArr) {
@@ -61,9 +65,9 @@ function get3Crv(ptArr) {
 }
 
 
-function get3Mesh(crvArr) {
+function get3Mesh(crvArr, mat) {
 	var nSrf = verb.geom.NurbsSurface.byLoftingCurves( crvArr, 2 );
-	var mesh3 = new THREE.Mesh( nSrf.toThreeGeometry(), matMesh_default );
+	var mesh3 = new THREE.Mesh( nSrf.toThreeGeometry(), mat );
 	return mesh3;
 }
 
@@ -97,6 +101,8 @@ var w_outerMul = 1.7;
 
 var ht_add_y = 0;
 var ht_add_z = 0;
+
+var activeMat = matMesh_red;
 
 
 function updatePts() {
@@ -302,6 +308,9 @@ Design_A.init = function() {
 
 Design_A.onParamChange = function(params, group) {
 	this.inputState = params;
+	if (this.inputState.colour == "Red") activeMat = matMesh_red;
+	if (this.inputState.colour == "Blue") activeMat = matMesh_blue;
+	if (this.inputState.colour == "Green") activeMat = matMesh_green;
 	updatePts();
 }
 
@@ -348,31 +357,30 @@ Design_A.updateGeom_debug = function(debugGroup) {
 	var o_st_mirr = get3Crv(o_st_pts_mirr);
 	var o_ft_mirr = get3Crv(o_ft_pts_mirr);
 
-	obj.add(i_bs);
-	obj.add(i_bk);
-	obj.add(i_tp);
-	obj.add(i_st);
-	obj.add(i_ft);
+	// obj.add(i_bs);
+	// obj.add(i_bk);
+	// obj.add(i_tp);
+	// obj.add(i_st);
+	// obj.add(i_ft);
 
-	obj.add(o_bs);
-	obj.add(o_bk);
-	obj.add(o_tp);
-	obj.add(o_st);
-	obj.add(o_ft);
+	// obj.add(o_bs);
+	// obj.add(o_bk);
+	// obj.add(o_tp);
+	// obj.add(o_st);
+	// obj.add(o_ft);
 
-	obj.add(i_bs_mirr);
-	obj.add(i_bk_mirr);
-	obj.add(i_tp_mirr);
-	obj.add(i_st_mirr);
-	obj.add(i_ft_mirr);
+	// obj.add(i_bs_mirr);
+	// obj.add(i_bk_mirr);
+	// obj.add(i_tp_mirr);
+	// obj.add(i_st_mirr);
+	// obj.add(i_ft_mirr);
 
-	obj.add(o_bs_mirr);
-	obj.add(o_bk_mirr);
-	obj.add(o_tp_mirr);
-	obj.add(o_st_mirr);
-	obj.add(o_ft_mirr);
+	// obj.add(o_bs_mirr);
+	// obj.add(o_bk_mirr);
+	// obj.add(o_tp_mirr);
+	// obj.add(o_st_mirr);
+	// obj.add(o_ft_mirr);
 
-	debugGroup.add(obj);
 
 
 
@@ -386,7 +394,7 @@ Design_A.updateGeom_debug = function(debugGroup) {
 					verb.geom.NurbsCurve.byPoints( i_bs_pts_mirr, 2 ),
 					verb.geom.NurbsCurve.byPoints( o_bs_pts_mirr, 2 )
 				];
-	var srf_bs = get3Mesh(curves);
+	var srf_bs = get3Mesh(curves, activeMat);
 
 	curves = 	[
 					verb.geom.NurbsCurve.byPoints( o_bk_pts, 2 ),
@@ -394,7 +402,7 @@ Design_A.updateGeom_debug = function(debugGroup) {
 					verb.geom.NurbsCurve.byPoints( i_bk_pts_mirr, 2 ),
 					verb.geom.NurbsCurve.byPoints( o_bk_pts_mirr, 2 )
 				];
-	var srf_bk = get3Mesh(curves);
+	var srf_bk = get3Mesh(curves, activeMat);
 
 	curves = 	[
 					verb.geom.NurbsCurve.byPoints( o_tp_pts, 2 ),
@@ -402,7 +410,7 @@ Design_A.updateGeom_debug = function(debugGroup) {
 					verb.geom.NurbsCurve.byPoints( i_tp_pts_mirr, 2 ),
 					verb.geom.NurbsCurve.byPoints( o_tp_pts_mirr, 2 )
 				];
-	var srf_tp = get3Mesh(curves);
+	var srf_tp = get3Mesh(curves, activeMat);
 
 	curves = 	[
 					verb.geom.NurbsCurve.byPoints( o_st_pts, 2 ),
@@ -410,7 +418,7 @@ Design_A.updateGeom_debug = function(debugGroup) {
 					verb.geom.NurbsCurve.byPoints( i_st_pts_mirr, 2 ),
 					verb.geom.NurbsCurve.byPoints( o_st_pts_mirr, 2 )
 				];
-	var srf_st = get3Mesh(curves);
+	var srf_st = get3Mesh(curves, activeMat);
 
 	curves = 	[
 					verb.geom.NurbsCurve.byPoints( o_ft_pts, 2 ),
@@ -418,16 +426,17 @@ Design_A.updateGeom_debug = function(debugGroup) {
 					verb.geom.NurbsCurve.byPoints( i_ft_pts_mirr, 2 ),
 					verb.geom.NurbsCurve.byPoints( o_ft_pts_mirr, 2 )
 				];
-	var srf_ft = get3Mesh(curves);
+	var srf_ft = get3Mesh(curves, activeMat);
 
-	debugGroup.add(srf_bs);
-	debugGroup.add(srf_bk);
-	debugGroup.add(srf_tp);
-	debugGroup.add(srf_st);
-	debugGroup.add(srf_ft);
+	obj.add(srf_bs);
+	obj.add(srf_bk);
+	obj.add(srf_tp);
+	obj.add(srf_st);
+	obj.add(srf_ft);
 
 
 
+	debugGroup.add(obj);
 
 
 }
