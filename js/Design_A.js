@@ -58,20 +58,6 @@ var matMesh_blue = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, shading
 var matMesh_green = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, shading: THREE.SmoothShading, color: 0x33691e, specular: 0x010101, } );
 
 
-function get3Crv(ptArr) {
-	var crv = verb.geom.NurbsCurve.byPoints( ptArr, 2 );
-	var line3 = new THREE.Line( crv.toThreeGeometry(), matLine_black );
-	return line3;
-}
-
-
-function get3Mesh(crvArr, mat) {
-	var nSrf = verb.geom.NurbsSurface.byLoftingCurves( crvArr, 2 );
-	var mesh3 = new THREE.Mesh( nSrf.toThreeGeometry(), mat );
-	return mesh3;
-}
-
-
 function map_range(value, low1, high1, low2, high2, interp="lin") {
 	var val = low2 + (high2 - low2) * (value - low1) / (high1 - low1);
     return val;
@@ -333,53 +319,53 @@ Design_A.updateGeom_debug = function(debugGroup) {
 
 
 	// add curves
-	var i_bs = get3Crv(i_bs_pts);
-	var i_bk = get3Crv(i_bk_pts);
-	var i_tp = get3Crv(i_tp_pts);
-	var i_st = get3Crv(i_st_pts);
-	var i_ft = get3Crv(i_ft_pts);
+	var i_bs = verb.geom.NurbsCurve.byPoints( i_bs_pts, 2 );
+	var i_bk = verb.geom.NurbsCurve.byPoints( i_bk_pts, 2 );
+	var i_tp = verb.geom.NurbsCurve.byPoints( i_tp_pts, 2 );
+	var i_st = verb.geom.NurbsCurve.byPoints( i_st_pts, 2 );
+	var i_ft = verb.geom.NurbsCurve.byPoints( i_ft_pts, 2 );
 
-	var o_bs = get3Crv(o_bs_pts);
-	var o_bk = get3Crv(o_bk_pts);
-	var o_tp = get3Crv(o_tp_pts);
-	var o_st = get3Crv(o_st_pts);
-	var o_ft = get3Crv(o_ft_pts);
+	var o_bs = verb.geom.NurbsCurve.byPoints( o_bs_pts, 2 );
+	var o_bk = verb.geom.NurbsCurve.byPoints( o_bk_pts, 2 );
+	var o_tp = verb.geom.NurbsCurve.byPoints( o_tp_pts, 2 );
+	var o_st = verb.geom.NurbsCurve.byPoints( o_st_pts, 2 );
+	var o_ft = verb.geom.NurbsCurve.byPoints( o_ft_pts, 2 );
 
-	var i_bs_mirr = get3Crv(i_bs_pts_mirr);
-	var i_bk_mirr = get3Crv(i_bk_pts_mirr);
-	var i_tp_mirr = get3Crv(i_tp_pts_mirr);
-	var i_st_mirr = get3Crv(i_st_pts_mirr);
-	var i_ft_mirr = get3Crv(i_ft_pts_mirr);
+	var i_bs_mirr = verb.geom.NurbsCurve.byPoints( i_bs_pts_mirr, 2 );
+	var i_bk_mirr = verb.geom.NurbsCurve.byPoints( i_bk_pts_mirr, 2 );
+	var i_tp_mirr = verb.geom.NurbsCurve.byPoints( i_tp_pts_mirr, 2 );
+	var i_st_mirr = verb.geom.NurbsCurve.byPoints( i_st_pts_mirr, 2 );
+	var i_ft_mirr = verb.geom.NurbsCurve.byPoints( i_ft_pts_mirr, 2 );
 
-	var o_bs_mirr = get3Crv(o_bs_pts_mirr);
-	var o_bk_mirr = get3Crv(o_bk_pts_mirr);
-	var o_tp_mirr = get3Crv(o_tp_pts_mirr);
-	var o_st_mirr = get3Crv(o_st_pts_mirr);
-	var o_ft_mirr = get3Crv(o_ft_pts_mirr);
+	var o_bs_mirr = verb.geom.NurbsCurve.byPoints( o_bs_pts_mirr, 2 );
+	var o_bk_mirr = verb.geom.NurbsCurve.byPoints( o_bk_pts_mirr, 2 );
+	var o_tp_mirr = verb.geom.NurbsCurve.byPoints( o_tp_pts_mirr, 2 );
+	var o_st_mirr = verb.geom.NurbsCurve.byPoints( o_st_pts_mirr, 2 );
+	var o_ft_mirr = verb.geom.NurbsCurve.byPoints( o_ft_pts_mirr, 2 );
 
-	// obj.add(i_bs);
-	// obj.add(i_bk);
-	// obj.add(i_tp);
-	// obj.add(i_st);
-	// obj.add(i_ft);
+	// obj.add(new THREE.Line( i_bs.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( i_bk.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( i_tp.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( i_st.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( i_ft.toThreeGeometry(), matLine_black ));
 
-	// obj.add(o_bs);
-	// obj.add(o_bk);
-	// obj.add(o_tp);
-	// obj.add(o_st);
-	// obj.add(o_ft);
+	// obj.add(new THREE.Line( o_bs.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( o_bk.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( o_tp.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( o_st.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( o_ft.toThreeGeometry(), matLine_black ));
 
-	// obj.add(i_bs_mirr);
-	// obj.add(i_bk_mirr);
-	// obj.add(i_tp_mirr);
-	// obj.add(i_st_mirr);
-	// obj.add(i_ft_mirr);
+	// obj.add(new THREE.Line( i_bs_mirr.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( i_bk_mirr.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( i_tp_mirr.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( i_st_mirr.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( i_ft_mirr.toThreeGeometry(), matLine_black ));
 
-	// obj.add(o_bs_mirr);
-	// obj.add(o_bk_mirr);
-	// obj.add(o_tp_mirr);
-	// obj.add(o_st_mirr);
-	// obj.add(o_ft_mirr);
+	// obj.add(new THREE.Line( o_bs_mirr.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( o_bk_mirr.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( o_tp_mirr.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( o_st_mirr.toThreeGeometry(), matLine_black ));
+	// obj.add(new THREE.Line( o_ft_mirr.toThreeGeometry(), matLine_black ));
 
 
 
@@ -394,7 +380,7 @@ Design_A.updateGeom_debug = function(debugGroup) {
 					verb.geom.NurbsCurve.byPoints( i_bs_pts_mirr, 2 ),
 					verb.geom.NurbsCurve.byPoints( o_bs_pts_mirr, 2 )
 				];
-	var srf_bs = get3Mesh(curves, activeMat);
+	var srf_bs = verb.geom.NurbsSurface.byLoftingCurves( curves, 2 );
 
 	curves = 	[
 					verb.geom.NurbsCurve.byPoints( o_bk_pts, 2 ),
@@ -402,7 +388,7 @@ Design_A.updateGeom_debug = function(debugGroup) {
 					verb.geom.NurbsCurve.byPoints( i_bk_pts_mirr, 2 ),
 					verb.geom.NurbsCurve.byPoints( o_bk_pts_mirr, 2 )
 				];
-	var srf_bk = get3Mesh(curves, activeMat);
+	var srf_bk = verb.geom.NurbsSurface.byLoftingCurves( curves, 2 );
 
 	curves = 	[
 					verb.geom.NurbsCurve.byPoints( o_tp_pts, 2 ),
@@ -410,7 +396,7 @@ Design_A.updateGeom_debug = function(debugGroup) {
 					verb.geom.NurbsCurve.byPoints( i_tp_pts_mirr, 2 ),
 					verb.geom.NurbsCurve.byPoints( o_tp_pts_mirr, 2 )
 				];
-	var srf_tp = get3Mesh(curves, activeMat);
+	var srf_tp = verb.geom.NurbsSurface.byLoftingCurves( curves, 2 );
 
 	curves = 	[
 					verb.geom.NurbsCurve.byPoints( o_st_pts, 2 ),
@@ -418,7 +404,7 @@ Design_A.updateGeom_debug = function(debugGroup) {
 					verb.geom.NurbsCurve.byPoints( i_st_pts_mirr, 2 ),
 					verb.geom.NurbsCurve.byPoints( o_st_pts_mirr, 2 )
 				];
-	var srf_st = get3Mesh(curves, activeMat);
+	var srf_st = verb.geom.NurbsSurface.byLoftingCurves( curves, 2 );
 
 	curves = 	[
 					verb.geom.NurbsCurve.byPoints( o_ft_pts, 2 ),
@@ -426,13 +412,24 @@ Design_A.updateGeom_debug = function(debugGroup) {
 					verb.geom.NurbsCurve.byPoints( i_ft_pts_mirr, 2 ),
 					verb.geom.NurbsCurve.byPoints( o_ft_pts_mirr, 2 )
 				];
-	var srf_ft = get3Mesh(curves, activeMat);
+	var srf_ft = verb.geom.NurbsSurface.byLoftingCurves( curves, 2 );
 
-	obj.add(srf_bs);
-	obj.add(srf_bk);
-	obj.add(srf_tp);
-	obj.add(srf_st);
-	obj.add(srf_ft);
+
+
+
+	var nSrf = verb.geom.NurbsSurface.byLoftingCurves( curves, 2 );
+	var s = nSrf.isocurve( 0.5, true );
+	// console.log(s);
+	addCurveToScene(s.toThreeGeometry());
+    // nSrf.isocurveSync( 0.5, true ).then(function(x){
+    //     addCurveToScene( x.toThreeGeometry() );
+    // });
+
+	obj.add(new THREE.Mesh( srf_bs.toThreeGeometry(), activeMat ));
+	obj.add(new THREE.Mesh( srf_bk.toThreeGeometry(), activeMat ));
+	obj.add(new THREE.Mesh( srf_tp.toThreeGeometry(), activeMat ));
+	obj.add(new THREE.Mesh( srf_st.toThreeGeometry(), activeMat ));
+	obj.add(new THREE.Mesh( srf_ft.toThreeGeometry(), activeMat ));
 
 
 
@@ -440,5 +437,7 @@ Design_A.updateGeom_debug = function(debugGroup) {
 
 
 }
+
+
 
 
