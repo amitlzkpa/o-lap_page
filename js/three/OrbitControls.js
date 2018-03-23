@@ -11,901 +11,927 @@
 //
 //    Orbit - left mouse / touch: one finger move
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finter swipe
+//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 THREE.OrbitControls = function ( object, domElement ) {
 
-    this.object = object;
+	this.object = object;
 
-    this.domElement = ( domElement !== undefined ) ? domElement : document;
+	this.domElement = ( domElement !== undefined ) ? domElement : document;
 
-    // Set to false to disable this control
-    this.enabled = true;
+	// Set to false to disable this control
+	this.enabled = true;
 
-    // "target" sets the location of focus, where the object orbits around
-    // this.target = new THREE.Vector3();
-    this.target = new THREE.Vector3().addVectors(object.position, object.getWorldDirection());
+	// "target" sets the location of focus, where the object orbits around
+	this.target = new THREE.Vector3();
 
-    // How far you can dolly in and out ( PerspectiveCamera only )
-    this.minDistance = 0;
-    this.maxDistance = Infinity;
+	// How far you can dolly in and out ( PerspectiveCamera only )
+	this.minDistance = 0;
+	this.maxDistance = Infinity;
 
-    // How far you can zoom in and out ( OrthographicCamera only )
-    this.minZoom = 0;
-    this.maxZoom = Infinity;
+	// How far you can zoom in and out ( OrthographicCamera only )
+	this.minZoom = 0;
+	this.maxZoom = Infinity;
 
-    // How far you can orbit vertically, upper and lower limits.
-    // Range is 0 to Math.PI radians.
-    this.minPolarAngle = 0; // radians
-    this.maxPolarAngle = Math.PI; // radians
+	// How far you can orbit vertically, upper and lower limits.
+	// Range is 0 to Math.PI radians.
+	this.minPolarAngle = 0; // radians
+	this.maxPolarAngle = Math.PI; // radians
 
-    // How far you can orbit horizontally, upper and lower limits.
-    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
-    this.minAzimuthAngle = - Infinity; // radians
-    this.maxAzimuthAngle = Infinity; // radians
+	// How far you can orbit horizontally, upper and lower limits.
+	// If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+	this.minAzimuthAngle = - Infinity; // radians
+	this.maxAzimuthAngle = Infinity; // radians
 
-    // Set to true to enable damping (inertia)
-    // If damping is enabled, you must call controls.update() in your animation loop
-    this.enableDamping = false;
-    this.dampingFactor = 0.25;
+	// Set to true to enable damping (inertia)
+	// If damping is enabled, you must call controls.update() in your animation loop
+	this.enableDamping = false;
+	this.dampingFactor = 0.25;
 
-    // This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
-    // Set to false to disable zooming
-    this.enableZoom = true;
-    this.zoomSpeed = 1.0;
+	// This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
+	// Set to false to disable zooming
+	this.enableZoom = true;
+	this.zoomSpeed = 1.0;
 
-    // Set to false to disable rotating
-    this.enableRotate = true;
-    this.rotateSpeed = 1.0;
+	// Set to false to disable rotating
+	this.enableRotate = true;
+	this.rotateSpeed = 1.0;
 
-    // Set to false to disable panning
-    this.enablePan = true;
-    this.keyPanSpeed = 7.0; // pixels moved per arrow key push
+	// Set to false to disable panning
+	this.enablePan = true;
+	this.panSpeed = 1.0;
+	this.panningMode = THREE.ScreenSpacePanning; // alternate THREE.HorizontalPanning
+	this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
 
-    // Set to true to automatically rotate around the target
-    // If auto-rotate is enabled, you must call controls.update() in your animation loop
-    this.autoRotate = false;
-    this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
+	// Set to true to automatically rotate around the target
+	// If auto-rotate is enabled, you must call controls.update() in your animation loop
+	this.autoRotate = false;
+	this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
 
-    // Set to false to disable use of the keys
-    this.enableKeys = true;
+	// Set to false to disable use of the keys
+	this.enableKeys = true;
 
-    // The four arrow keys
-    this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
+	// The four arrow keys
+	this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
 
-    // Mouse buttons
-    this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
+	// Mouse buttons
+	this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
 
-    // for reset
-    this.target0 = this.target.clone();
-    this.position0 = this.object.position.clone();
-    this.zoom0 = this.object.zoom;
+	// for reset
+	this.target0 = this.target.clone();
+	this.position0 = this.object.position.clone();
+	this.zoom0 = this.object.zoom;
 
-    //
-    // public methods
-    //
+	//
+	// public methods
+	//
 
-    this.getPolarAngle = function () {
+	this.getPolarAngle = function () {
 
-        return spherical.phi;
+		return spherical.phi;
 
-    };
+	};
 
-    this.getAzimuthalAngle = function () {
+	this.getAzimuthalAngle = function () {
 
-        return spherical.theta;
+		return spherical.theta;
 
-    };
+	};
 
-    this.reset = function () {
+	this.saveState = function () {
 
-        scope.target.copy( scope.target0 );
-        scope.object.position.copy( scope.position0 );
-        scope.object.zoom = scope.zoom0;
+		scope.target0.copy( scope.target );
+		scope.position0.copy( scope.object.position );
+		scope.zoom0 = scope.object.zoom;
 
-        scope.object.updateProjectionMatrix();
-        scope.dispatchEvent( changeEvent );
+	};
 
-        scope.update();
+	this.reset = function () {
 
-        state = STATE.NONE;
+		scope.target.copy( scope.target0 );
+		scope.object.position.copy( scope.position0 );
+		scope.object.zoom = scope.zoom0;
 
-    };
+		scope.object.updateProjectionMatrix();
+		scope.dispatchEvent( changeEvent );
 
-    // this method is exposed, but perhaps it would be better if we can make it private...
-    this.update = function() {
+		scope.update();
 
-        var offset = new THREE.Vector3();
+		state = STATE.NONE;
 
-        // so camera.up is the orbit axis
-        var quat = new THREE.Quaternion().setFromUnitVectors( object.up, new THREE.Vector3( 0, 1, 0 ) );
-        var quatInverse = quat.clone().inverse();
+	};
 
-        var lastPosition = new THREE.Vector3();
-        var lastQuaternion = new THREE.Quaternion();
+	// this method is exposed, but perhaps it would be better if we can make it private...
+	this.update = function () {
 
-        return function () {
+		var offset = new THREE.Vector3();
 
-            var position = scope.object.position;
+		// so camera.up is the orbit axis
+		var quat = new THREE.Quaternion().setFromUnitVectors( object.up, new THREE.Vector3( 0, 1, 0 ) );
+		var quatInverse = quat.clone().inverse();
 
-            offset.copy( position ).sub( scope.target );
+		var lastPosition = new THREE.Vector3();
+		var lastQuaternion = new THREE.Quaternion();
 
-            // rotate offset to "y-axis-is-up" space
-            offset.applyQuaternion( quat );
+		return function update() {
 
-            // angle from z-axis around y-axis
-            spherical.setFromVector3( offset );
+			var position = scope.object.position;
 
-            if ( scope.autoRotate && state === STATE.NONE ) {
+			offset.copy( position ).sub( scope.target );
 
-                rotateLeft( getAutoRotationAngle() );
+			// rotate offset to "y-axis-is-up" space
+			offset.applyQuaternion( quat );
 
-            }
+			// angle from z-axis around y-axis
+			spherical.setFromVector3( offset );
 
-            spherical.theta += sphericalDelta.theta;
-            spherical.phi += sphericalDelta.phi;
+			if ( scope.autoRotate && state === STATE.NONE ) {
 
-            // restrict theta to be between desired limits
-            spherical.theta = Math.max( scope.minAzimuthAngle, Math.min( scope.maxAzimuthAngle, spherical.theta ) );
+				rotateLeft( getAutoRotationAngle() );
 
-            // restrict phi to be between desired limits
-            spherical.phi = Math.max( scope.minPolarAngle, Math.min( scope.maxPolarAngle, spherical.phi ) );
+			}
 
-            spherical.makeSafe();
+			spherical.theta += sphericalDelta.theta;
+			spherical.phi += sphericalDelta.phi;
 
+			// restrict theta to be between desired limits
+			spherical.theta = Math.max( scope.minAzimuthAngle, Math.min( scope.maxAzimuthAngle, spherical.theta ) );
 
-            spherical.radius *= scale;
+			// restrict phi to be between desired limits
+			spherical.phi = Math.max( scope.minPolarAngle, Math.min( scope.maxPolarAngle, spherical.phi ) );
 
-            // restrict radius to be between desired limits
-            spherical.radius = Math.max( scope.minDistance, Math.min( scope.maxDistance, spherical.radius ) );
+			spherical.makeSafe();
 
-            // move target to panned location
-            scope.target.add( panOffset );
 
-            offset.setFromSpherical( spherical );
+			spherical.radius *= scale;
 
-            // rotate offset back to "camera-up-vector-is-up" space
-            offset.applyQuaternion( quatInverse );
+			// restrict radius to be between desired limits
+			spherical.radius = Math.max( scope.minDistance, Math.min( scope.maxDistance, spherical.radius ) );
 
-            position.copy( scope.target ).add( offset );
+			// move target to panned location
+			scope.target.add( panOffset );
 
-            scope.object.lookAt( scope.target );
+			offset.setFromSpherical( spherical );
 
-            if ( scope.enableDamping === true ) {
+			// rotate offset back to "camera-up-vector-is-up" space
+			offset.applyQuaternion( quatInverse );
 
-                sphericalDelta.theta *= ( 1 - scope.dampingFactor );
-                sphericalDelta.phi *= ( 1 - scope.dampingFactor );
+			position.copy( scope.target ).add( offset );
 
-            } else {
+			scope.object.lookAt( scope.target );
 
-                sphericalDelta.set( 0, 0, 0 );
+			if ( scope.enableDamping === true ) {
 
-            }
+				sphericalDelta.theta *= ( 1 - scope.dampingFactor );
+				sphericalDelta.phi *= ( 1 - scope.dampingFactor );
 
-            scale = 1;
-            panOffset.set( 0, 0, 0 );
+				panOffset.multiplyScalar( 1 - scope.dampingFactor );
 
-            // update condition is:
-            // min(camera displacement, camera rotation in radians)^2 > EPS
-            // using small-angle approximation cos(x/2) = 1 - x^2 / 8
+			} else {
 
-            if ( zoomChanged ||
-                lastPosition.distanceToSquared( scope.object.position ) > EPS ||
-                8 * ( 1 - lastQuaternion.dot( scope.object.quaternion ) ) > EPS ) {
+				sphericalDelta.set( 0, 0, 0 );
 
-                scope.dispatchEvent( changeEvent );
+				panOffset.set( 0, 0, 0 );
 
-                lastPosition.copy( scope.object.position );
-                lastQuaternion.copy( scope.object.quaternion );
-                zoomChanged = false;
+			}
 
-                return true;
+			scale = 1;
 
-            }
+			// update condition is:
+			// min(camera displacement, camera rotation in radians)^2 > EPS
+			// using small-angle approximation cos(x/2) = 1 - x^2 / 8
 
-            return false;
+			if ( zoomChanged ||
+				lastPosition.distanceToSquared( scope.object.position ) > EPS ||
+				8 * ( 1 - lastQuaternion.dot( scope.object.quaternion ) ) > EPS ) {
 
-        };
+				scope.dispatchEvent( changeEvent );
 
-    }();
+				lastPosition.copy( scope.object.position );
+				lastQuaternion.copy( scope.object.quaternion );
+				zoomChanged = false;
 
-    this.dispose = function() {
+				return true;
 
-        scope.domElement.removeEventListener( 'contextmenu', onContextMenu, false );
-        scope.domElement.removeEventListener( 'mousedown', onMouseDown, false );
-        scope.domElement.removeEventListener( 'mousewheel', onMouseWheel, false );
-        scope.domElement.removeEventListener( 'MozMousePixelScroll', onMouseWheel, false ); // firefox
+			}
 
-        scope.domElement.removeEventListener( 'touchstart', onTouchStart, false );
-        scope.domElement.removeEventListener( 'touchend', onTouchEnd, false );
-        scope.domElement.removeEventListener( 'touchmove', onTouchMove, false );
+			return false;
 
-        document.removeEventListener( 'mousemove', onMouseMove, false );
-        document.removeEventListener( 'mouseup', onMouseUp, false );
-        document.removeEventListener( 'mouseout', onMouseUp, false );
+		};
 
-        window.removeEventListener( 'keydown', onKeyDown, false );
+	}();
 
-        //scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
+	this.dispose = function () {
 
-    };
+		scope.domElement.removeEventListener( 'contextmenu', onContextMenu, false );
+		scope.domElement.removeEventListener( 'mousedown', onMouseDown, false );
+		scope.domElement.removeEventListener( 'wheel', onMouseWheel, false );
 
-    //
-    // internals
-    //
+		scope.domElement.removeEventListener( 'touchstart', onTouchStart, false );
+		scope.domElement.removeEventListener( 'touchend', onTouchEnd, false );
+		scope.domElement.removeEventListener( 'touchmove', onTouchMove, false );
 
-    var scope = this;
+		document.removeEventListener( 'mousemove', onMouseMove, false );
+		document.removeEventListener( 'mouseup', onMouseUp, false );
 
-    var changeEvent = { type: 'change' };
-    var startEvent = { type: 'start' };
-    var endEvent = { type: 'end' };
+		window.removeEventListener( 'keydown', onKeyDown, false );
 
-    var STATE = { NONE : - 1, ROTATE : 0, DOLLY : 1, PAN : 2, TOUCH_ROTATE : 3, TOUCH_DOLLY : 4, TOUCH_PAN : 5 };
+		//scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
 
-    var state = STATE.NONE;
+	};
 
-    var EPS = 0.000001;
+	//
+	// internals
+	//
 
-    // current position in spherical coordinates
-    var spherical = new THREE.Spherical();
-    var sphericalDelta = new THREE.Spherical();
+	var scope = this;
 
-    var scale = 1;
-    var panOffset = new THREE.Vector3();
-    var zoomChanged = false;
+	var changeEvent = { type: 'change' };
+	var startEvent = { type: 'start' };
+	var endEvent = { type: 'end' };
 
-    var rotateStart = new THREE.Vector2();
-    var rotateEnd = new THREE.Vector2();
-    var rotateDelta = new THREE.Vector2();
+	var STATE = { NONE: - 1, ROTATE: 0, DOLLY: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_DOLLY: 4, TOUCH_PAN: 5 };
 
-    var panStart = new THREE.Vector2();
-    var panEnd = new THREE.Vector2();
-    var panDelta = new THREE.Vector2();
+	var state = STATE.NONE;
 
-    var dollyStart = new THREE.Vector2();
-    var dollyEnd = new THREE.Vector2();
-    var dollyDelta = new THREE.Vector2();
+	var EPS = 0.000001;
 
-    function getAutoRotationAngle() {
+	// current position in spherical coordinates
+	var spherical = new THREE.Spherical();
+	var sphericalDelta = new THREE.Spherical();
 
-        return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
+	var scale = 1;
+	var panOffset = new THREE.Vector3();
+	var zoomChanged = false;
 
-    }
+	var rotateStart = new THREE.Vector2();
+	var rotateEnd = new THREE.Vector2();
+	var rotateDelta = new THREE.Vector2();
 
-    function getZoomScale() {
+	var panStart = new THREE.Vector2();
+	var panEnd = new THREE.Vector2();
+	var panDelta = new THREE.Vector2();
 
-        return Math.pow( 0.95, scope.zoomSpeed );
+	var dollyStart = new THREE.Vector2();
+	var dollyEnd = new THREE.Vector2();
+	var dollyDelta = new THREE.Vector2();
 
-    }
+	function getAutoRotationAngle() {
 
-    function rotateLeft( angle ) {
+		return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
 
-        sphericalDelta.theta -= angle;
+	}
 
-    }
+	function getZoomScale() {
 
-    function rotateUp( angle ) {
+		return Math.pow( 0.95, scope.zoomSpeed );
 
-        sphericalDelta.phi -= angle;
+	}
 
-    }
+	function rotateLeft( angle ) {
 
-    var panLeft = function() {
+		sphericalDelta.theta -= angle;
 
-        var v = new THREE.Vector3();
+	}
 
-        return function panLeft( distance, objectMatrix ) {
+	function rotateUp( angle ) {
 
-            v.setFromMatrixColumn( objectMatrix, 0 ); // get X column of objectMatrix
-            v.multiplyScalar( - distance );
+		sphericalDelta.phi -= angle;
 
-            panOffset.add( v );
+	}
 
-        };
+	var panLeft = function () {
 
-    }();
+		var v = new THREE.Vector3();
 
-    var panUp = function() {
+		return function panLeft( distance, objectMatrix ) {
 
-        var v = new THREE.Vector3();
+			v.setFromMatrixColumn( objectMatrix, 0 ); // get X column of objectMatrix
+			v.multiplyScalar( - distance );
 
-        return function panUp( distance, objectMatrix ) {
+			panOffset.add( v );
 
-            v.setFromMatrixColumn( objectMatrix, 1 ); // get Y column of objectMatrix
-            v.multiplyScalar( distance );
+		};
 
-            panOffset.add( v );
+	}();
 
-        };
+	var panUp = function () {
 
-    }();
+		var v = new THREE.Vector3();
 
-    // deltaX and deltaY are in pixels; right and down are positive
-    var pan = function() {
+		return function panUp( distance, objectMatrix ) {
 
-        var offset = new THREE.Vector3();
+			switch ( scope.panningMode ) {
 
-        return function( deltaX, deltaY ) {
+				case THREE.ScreenSpacePanning:
 
-            var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+					v.setFromMatrixColumn( objectMatrix, 1 );
+					break;
 
-            if ( scope.object instanceof THREE.PerspectiveCamera ) {
+				case THREE.HorizontalPanning:
 
-                // perspective
-                var position = scope.object.position;
-                offset.copy( position ).sub( scope.target );
-                var targetDistance = offset.length();
+					v.setFromMatrixColumn( objectMatrix, 0 );
+					v.crossVectors( scope.object.up, v );
+					break;
 
-                // half of the fov is center to top of screen
-                targetDistance *= Math.tan( ( scope.object.fov / 2 ) * Math.PI / 180.0 );
+			}
 
-                // we actually don't use screenWidth, since perspective camera is fixed to screen height
-                panLeft( 2 * deltaX * targetDistance / element.clientHeight, scope.object.matrix );
-                panUp( 2 * deltaY * targetDistance / element.clientHeight, scope.object.matrix );
+			v.multiplyScalar( distance );
 
-            } else if ( scope.object instanceof THREE.OrthographicCamera ) {
+			panOffset.add( v );
 
-                // orthographic
-                panLeft( deltaX * ( scope.object.right - scope.object.left ) / scope.object.zoom / element.clientWidth, scope.object.matrix );
-                panUp( deltaY * ( scope.object.top - scope.object.bottom ) / scope.object.zoom / element.clientHeight, scope.object.matrix );
+		};
 
-            } else {
+	}();
 
-                // camera neither orthographic nor perspective
-                console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
-                scope.enablePan = false;
+	// deltaX and deltaY are in pixels; right and down are positive
+	var pan = function () {
 
-            }
+		var offset = new THREE.Vector3();
 
-        };
+		return function pan( deltaX, deltaY ) {
 
-    }();
+			var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-    function dollyIn( dollyScale ) {
+			if ( scope.object.isPerspectiveCamera ) {
 
-        if ( scope.object instanceof THREE.PerspectiveCamera ) {
+				// perspective
+				var position = scope.object.position;
+				offset.copy( position ).sub( scope.target );
+				var targetDistance = offset.length();
 
-            scale /= dollyScale;
+				// half of the fov is center to top of screen
+				targetDistance *= Math.tan( ( scope.object.fov / 2 ) * Math.PI / 180.0 );
 
-        } else if ( scope.object instanceof THREE.OrthographicCamera ) {
+				// we actually don't use screenWidth, since perspective camera is fixed to screen height
+				panLeft( 2 * deltaX * targetDistance / element.clientHeight, scope.object.matrix );
+				panUp( 2 * deltaY * targetDistance / element.clientHeight, scope.object.matrix );
 
-            scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom * dollyScale ) );
-            scope.object.updateProjectionMatrix();
-            zoomChanged = true;
+			} else if ( scope.object.isOrthographicCamera ) {
 
-        } else {
+				// orthographic
+				panLeft( deltaX * ( scope.object.right - scope.object.left ) / scope.object.zoom / element.clientWidth, scope.object.matrix );
+				panUp( deltaY * ( scope.object.top - scope.object.bottom ) / scope.object.zoom / element.clientHeight, scope.object.matrix );
 
-            console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
-            scope.enableZoom = false;
+			} else {
 
-        }
+				// camera neither orthographic nor perspective
+				console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
+				scope.enablePan = false;
 
-    }
+			}
 
-    function dollyOut( dollyScale ) {
+		};
 
-        if ( scope.object instanceof THREE.PerspectiveCamera ) {
+	}();
 
-            scale *= dollyScale;
+	function dollyIn( dollyScale ) {
 
-        } else if ( scope.object instanceof THREE.OrthographicCamera ) {
+		if ( scope.object.isPerspectiveCamera ) {
 
-            scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom / dollyScale ) );
-            scope.object.updateProjectionMatrix();
-            zoomChanged = true;
+			scale /= dollyScale;
 
-        } else {
+		} else if ( scope.object.isOrthographicCamera ) {
 
-            console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
-            scope.enableZoom = false;
+			scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom * dollyScale ) );
+			scope.object.updateProjectionMatrix();
+			zoomChanged = true;
 
-        }
+		} else {
 
-    }
+			console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
+			scope.enableZoom = false;
 
-    //
-    // event callbacks - update the object state
-    //
+		}
 
-    function handleMouseDownRotate( event ) {
+	}
 
-        //console.log( 'handleMouseDownRotate' );
+	function dollyOut( dollyScale ) {
 
-        rotateStart.set( event.clientX, event.clientY );
+		if ( scope.object.isPerspectiveCamera ) {
 
-    }
+			scale *= dollyScale;
 
-    function handleMouseDownDolly( event ) {
+		} else if ( scope.object.isOrthographicCamera ) {
 
-        //console.log( 'handleMouseDownDolly' );
+			scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom / dollyScale ) );
+			scope.object.updateProjectionMatrix();
+			zoomChanged = true;
 
-        dollyStart.set( event.clientX, event.clientY );
+		} else {
 
-    }
+			console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
+			scope.enableZoom = false;
 
-    function handleMouseDownPan( event ) {
+		}
 
-        //console.log( 'handleMouseDownPan' );
+	}
 
-        panStart.set( event.clientX, event.clientY );
+	//
+	// event callbacks - update the object state
+	//
 
-    }
+	function handleMouseDownRotate( event ) {
 
-    function handleMouseMoveRotate( event ) {
+		//console.log( 'handleMouseDownRotate' );
 
-        //console.log( 'handleMouseMoveRotate' );
+		rotateStart.set( event.clientX, event.clientY );
 
-        rotateEnd.set( event.clientX, event.clientY );
-        rotateDelta.subVectors( rotateEnd, rotateStart );
+	}
 
-        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+	function handleMouseDownDolly( event ) {
 
-        // rotating across whole screen goes 360 degrees around
-        rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
+		//console.log( 'handleMouseDownDolly' );
 
-        // rotating up and down along whole screen attempts to go 360, but limited to 180
-        rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
+		dollyStart.set( event.clientX, event.clientY );
 
-        rotateStart.copy( rotateEnd );
+	}
 
-        scope.update();
+	function handleMouseDownPan( event ) {
 
-    }
+		//console.log( 'handleMouseDownPan' );
 
-    function handleMouseMoveDolly( event ) {
+		panStart.set( event.clientX, event.clientY );
 
-        //console.log( 'handleMouseMoveDolly' );
+	}
 
-        dollyEnd.set( event.clientX, event.clientY );
+	function handleMouseMoveRotate( event ) {
 
-        dollyDelta.subVectors( dollyEnd, dollyStart );
+		//console.log( 'handleMouseMoveRotate' );
 
-        if ( dollyDelta.y > 0 ) {
+		rotateEnd.set( event.clientX, event.clientY );
 
-            dollyIn( getZoomScale() );
+		rotateDelta.subVectors( rotateEnd, rotateStart ).multiplyScalar( scope.rotateSpeed );;
 
-        } else if ( dollyDelta.y < 0 ) {
+		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-            dollyOut( getZoomScale() );
+		// rotating across whole screen goes 360 degrees around
+		rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth );
 
-        }
+		// rotating up and down along whole screen attempts to go 360, but limited to 180
+		rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight );
 
-        dollyStart.copy( dollyEnd );
+		rotateStart.copy( rotateEnd );
 
-        scope.update();
+		scope.update();
 
-    }
+	}
 
-    function handleMouseMovePan( event ) {
+	function handleMouseMoveDolly( event ) {
 
-        //console.log( 'handleMouseMovePan' );
+		//console.log( 'handleMouseMoveDolly' );
 
-        panEnd.set( event.clientX, event.clientY );
+		dollyEnd.set( event.clientX, event.clientY );
 
-        panDelta.subVectors( panEnd, panStart );
+		dollyDelta.subVectors( dollyEnd, dollyStart );
 
-        pan( panDelta.x, panDelta.y );
+		if ( dollyDelta.y > 0 ) {
 
-        panStart.copy( panEnd );
+			dollyIn( getZoomScale() );
 
-        scope.update();
+		} else if ( dollyDelta.y < 0 ) {
 
-    }
+			dollyOut( getZoomScale() );
 
-    function handleMouseUp( event ) {
+		}
 
-        //console.log( 'handleMouseUp' );
+		dollyStart.copy( dollyEnd );
 
-    }
+		scope.update();
 
-    function handleMouseWheel( event ) {
+	}
 
-        //console.log( 'handleMouseWheel' );
+	function handleMouseMovePan( event ) {
 
-        var delta = 0;
+		//console.log( 'handleMouseMovePan' );
 
-        if ( event.wheelDelta !== undefined ) {
+		panEnd.set( event.clientX, event.clientY );
 
-            // WebKit / Opera / Explorer 9
+		panDelta.subVectors( panEnd, panStart ).multiplyScalar( scope.panSpeed );
 
-            delta = event.wheelDelta;
+		pan( panDelta.x, panDelta.y );
 
-        } else if ( event.detail !== undefined ) {
+		panStart.copy( panEnd );
 
-            // Firefox
+		scope.update();
 
-            delta = - event.detail;
+	}
 
-        }
+	function handleMouseUp( event ) {
 
-        if ( delta > 0 ) {
+		// console.log( 'handleMouseUp' );
 
-            dollyOut( getZoomScale() );
+	}
 
-        } else if ( delta < 0 ) {
+	function handleMouseWheel( event ) {
 
-            dollyIn( getZoomScale() );
+		// console.log( 'handleMouseWheel' );
 
-        }
+		if ( event.deltaY < 0 ) {
 
-        scope.update();
+			dollyOut( getZoomScale() );
 
-    }
+		} else if ( event.deltaY > 0 ) {
 
-    function handleKeyDown( event ) {
+			dollyIn( getZoomScale() );
 
-        //console.log( 'handleKeyDown' );
+		}
 
-        switch ( event.keyCode ) {
+		scope.update();
 
-            case scope.keys.UP:
-                pan( 0, scope.keyPanSpeed );
-                scope.update();
-                break;
+	}
 
-            case scope.keys.BOTTOM:
-                pan( 0, - scope.keyPanSpeed );
-                scope.update();
-                break;
+	function handleKeyDown( event ) {
 
-            case scope.keys.LEFT:
-                pan( scope.keyPanSpeed, 0 );
-                scope.update();
-                break;
+		//console.log( 'handleKeyDown' );
 
-            case scope.keys.RIGHT:
-                pan( - scope.keyPanSpeed, 0 );
-                scope.update();
-                break;
+		switch ( event.keyCode ) {
 
-        }
+			case scope.keys.UP:
+				pan( 0, scope.keyPanSpeed );
+				scope.update();
+				break;
 
-    }
+			case scope.keys.BOTTOM:
+				pan( 0, - scope.keyPanSpeed );
+				scope.update();
+				break;
 
-    function handleTouchStartRotate( event ) {
+			case scope.keys.LEFT:
+				pan( scope.keyPanSpeed, 0 );
+				scope.update();
+				break;
 
-        //console.log( 'handleTouchStartRotate' );
+			case scope.keys.RIGHT:
+				pan( - scope.keyPanSpeed, 0 );
+				scope.update();
+				break;
 
-        rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+		}
 
-    }
+	}
 
-    function handleTouchStartDolly( event ) {
+	function handleTouchStartRotate( event ) {
 
-        //console.log( 'handleTouchStartDolly' );
+		//console.log( 'handleTouchStartRotate' );
 
-        var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-        var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+		rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 
-        var distance = Math.sqrt( dx * dx + dy * dy );
+	}
 
-        dollyStart.set( 0, distance );
+	function handleTouchStartDolly( event ) {
 
-    }
+		//console.log( 'handleTouchStartDolly' );
 
-    function handleTouchStartPan( event ) {
+		var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+		var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 
-        //console.log( 'handleTouchStartPan' );
+		var distance = Math.sqrt( dx * dx + dy * dy );
 
-        panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+		dollyStart.set( 0, distance );
 
-    }
+	}
 
-    function handleTouchMoveRotate( event ) {
+	function handleTouchStartPan( event ) {
 
-        //console.log( 'handleTouchMoveRotate' );
+		//console.log( 'handleTouchStartPan' );
 
-        rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-        rotateDelta.subVectors( rotateEnd, rotateStart );
+		panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 
-        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+	}
 
-        // rotating across whole screen goes 360 degrees around
-        rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
+	function handleTouchMoveRotate( event ) {
 
-        // rotating up and down along whole screen attempts to go 360, but limited to 180
-        rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
+		//console.log( 'handleTouchMoveRotate' );
 
-        rotateStart.copy( rotateEnd );
+		rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 
-        scope.update();
+		rotateDelta.subVectors( rotateEnd, rotateStart ).multiplyScalar( scope.rotateSpeed );
 
-    }
+		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-    function handleTouchMoveDolly( event ) {
+		// rotating across whole screen goes 360 degrees around
+		rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth );
 
-        //console.log( 'handleTouchMoveDolly' );
+		// rotating up and down along whole screen attempts to go 360, but limited to 180
+		rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight );
 
-        var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-        var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+		rotateStart.copy( rotateEnd );
 
-        var distance = Math.sqrt( dx * dx + dy * dy );
+		scope.update();
 
-        dollyEnd.set( 0, distance );
+	}
 
-        dollyDelta.subVectors( dollyEnd, dollyStart );
+	function handleTouchMoveDolly( event ) {
 
-        if ( dollyDelta.y > 0 ) {
+		//console.log( 'handleTouchMoveDolly' );
 
-            dollyOut( getZoomScale() );
+		var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+		var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 
-        } else if ( dollyDelta.y < 0 ) {
+		var distance = Math.sqrt( dx * dx + dy * dy );
 
-            dollyIn( getZoomScale() );
+		dollyEnd.set( 0, distance );
 
-        }
+		dollyDelta.subVectors( dollyEnd, dollyStart );
 
-        dollyStart.copy( dollyEnd );
+		if ( dollyDelta.y > 0 ) {
 
-        scope.update();
+			dollyOut( getZoomScale() );
 
-    }
+		} else if ( dollyDelta.y < 0 ) {
 
-    function handleTouchMovePan( event ) {
+			dollyIn( getZoomScale() );
 
-        //console.log( 'handleTouchMovePan' );
+		}
 
-        panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+		dollyStart.copy( dollyEnd );
 
-        panDelta.subVectors( panEnd, panStart );
+		scope.update();
 
-        pan( panDelta.x, panDelta.y );
+	}
 
-        panStart.copy( panEnd );
+	function handleTouchMovePan( event ) {
 
-        scope.update();
+		//console.log( 'handleTouchMovePan' );
 
-    }
+		panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 
-    function handleTouchEnd( event ) {
+		panDelta.subVectors( panEnd, panStart ).multiplyScalar( scope.panSpeed );
 
-        //console.log( 'handleTouchEnd' );
+		pan( panDelta.x, panDelta.y );
 
-    }
+		panStart.copy( panEnd );
 
-    //
-    // event handlers - FSM: listen for events and reset state
-    //
+		scope.update();
 
-    function onMouseDown( event ) {
+	}
 
-        if ( scope.enabled === false ) return;
+	function handleTouchEnd( event ) {
 
-        event.preventDefault();
+		//console.log( 'handleTouchEnd' );
 
-        if ( event.button === scope.mouseButtons.ORBIT ) {
+	}
 
-            if ( scope.enableRotate === false ) return;
+	//
+	// event handlers - FSM: listen for events and reset state
+	//
 
-            handleMouseDownRotate( event );
+	function onMouseDown( event ) {
 
-            state = STATE.ROTATE;
+		if ( scope.enabled === false ) return;
 
-        } else if ( event.button === scope.mouseButtons.ZOOM ) {
+		event.preventDefault();
 
-            if ( scope.enableZoom === false ) return;
+		switch ( event.button ) {
 
-            handleMouseDownDolly( event );
+			case scope.mouseButtons.ORBIT:
 
-            state = STATE.DOLLY;
+				if ( scope.enableRotate === false ) return;
 
-        } else if ( event.button === scope.mouseButtons.PAN ) {
+				handleMouseDownRotate( event );
 
-            if ( scope.enablePan === false ) return;
+				state = STATE.ROTATE;
 
-            handleMouseDownPan( event );
+				break;
 
-            state = STATE.PAN;
+			case scope.mouseButtons.ZOOM:
 
-        }
+				if ( scope.enableZoom === false ) return;
 
-        if ( state !== STATE.NONE ) {
+				handleMouseDownDolly( event );
 
-            document.addEventListener( 'mousemove', onMouseMove, false );
-            document.addEventListener( 'mouseup', onMouseUp, false );
-            document.addEventListener( 'mouseout', onMouseUp, false );
+				state = STATE.DOLLY;
 
-            scope.dispatchEvent( startEvent );
+				break;
 
-        }
+			case scope.mouseButtons.PAN:
 
-    }
+				if ( scope.enablePan === false ) return;
 
-    function onMouseMove( event ) {
+				handleMouseDownPan( event );
 
-        if ( scope.enabled === false ) return;
+				state = STATE.PAN;
 
-        event.preventDefault();
+				break;
 
-        if ( state === STATE.ROTATE ) {
+		}
 
-            if ( scope.enableRotate === false ) return;
+		if ( state !== STATE.NONE ) {
 
-            handleMouseMoveRotate( event );
+			document.addEventListener( 'mousemove', onMouseMove, false );
+			document.addEventListener( 'mouseup', onMouseUp, false );
 
-        } else if ( state === STATE.DOLLY ) {
+			scope.dispatchEvent( startEvent );
 
-            if ( scope.enableZoom === false ) return;
+		}
 
-            handleMouseMoveDolly( event );
+	}
 
-        } else if ( state === STATE.PAN ) {
+	function onMouseMove( event ) {
 
-            if ( scope.enablePan === false ) return;
+		if ( scope.enabled === false ) return;
 
-            handleMouseMovePan( event );
+		event.preventDefault();
 
-        }
+		switch ( state ) {
 
-    }
+			case STATE.ROTATE:
 
-    function onMouseUp( event ) {
+				if ( scope.enableRotate === false ) return;
 
-        if ( scope.enabled === false ) return;
+				handleMouseMoveRotate( event );
 
-        handleMouseUp( event );
+				break;
 
-        document.removeEventListener( 'mousemove', onMouseMove, false );
-        document.removeEventListener( 'mouseup', onMouseUp, false );
-        document.removeEventListener( 'mouseout', onMouseUp, false );
+			case STATE.DOLLY:
 
-        scope.dispatchEvent( endEvent );
+				if ( scope.enableZoom === false ) return;
 
-        state = STATE.NONE;
+				handleMouseMoveDolly( event );
 
-    }
+				break;
 
-    function onMouseWheel( event ) {
+			case STATE.PAN:
 
-        if ( scope.enabled === false || scope.enableZoom === false || ( state !== STATE.NONE && state !== STATE.ROTATE ) ) return;
+				if ( scope.enablePan === false ) return;
 
-        event.preventDefault();
-        event.stopPropagation();
+				handleMouseMovePan( event );
 
-        handleMouseWheel( event );
+				break;
 
-        scope.dispatchEvent( startEvent ); // not sure why these are here...
-        scope.dispatchEvent( endEvent );
+		}
 
-    }
+	}
 
-    function onKeyDown( event ) {
+	function onMouseUp( event ) {
 
-        if ( scope.enabled === false || scope.enableKeys === false || scope.enablePan === false ) return;
+		if ( scope.enabled === false ) return;
 
-        handleKeyDown( event );
+		handleMouseUp( event );
 
-    }
+		document.removeEventListener( 'mousemove', onMouseMove, false );
+		document.removeEventListener( 'mouseup', onMouseUp, false );
 
-    function onTouchStart( event ) {
+		scope.dispatchEvent( endEvent );
 
-        if ( scope.enabled === false ) return;
+		state = STATE.NONE;
 
-        switch ( event.touches.length ) {
+	}
 
-            case 1: // one-fingered touch: rotate
+	function onMouseWheel( event ) {
 
-                if ( scope.enableRotate === false ) return;
+		if ( scope.enabled === false || scope.enableZoom === false || ( state !== STATE.NONE && state !== STATE.ROTATE ) ) return;
 
-                handleTouchStartRotate( event );
+		event.preventDefault();
+		event.stopPropagation();
 
-                state = STATE.TOUCH_ROTATE;
+		scope.dispatchEvent( startEvent );
 
-                break;
+		handleMouseWheel( event );
 
-            case 2: // two-fingered touch: dolly
+		scope.dispatchEvent( endEvent );
 
-                if ( scope.enableZoom === false ) return;
+	}
 
-                handleTouchStartDolly( event );
+	function onKeyDown( event ) {
 
-                state = STATE.TOUCH_DOLLY;
+		if ( scope.enabled === false || scope.enableKeys === false || scope.enablePan === false ) return;
 
-                break;
+		handleKeyDown( event );
 
-            case 3: // three-fingered touch: pan
+	}
 
-                if ( scope.enablePan === false ) return;
+	function onTouchStart( event ) {
 
-                handleTouchStartPan( event );
+		if ( scope.enabled === false ) return;
 
-                state = STATE.TOUCH_PAN;
+		switch ( event.touches.length ) {
 
-                break;
+			case 1:	// one-fingered touch: rotate
 
-            default:
+				if ( scope.enableRotate === false ) return;
 
-                state = STATE.NONE;
+				handleTouchStartRotate( event );
 
-        }
+				state = STATE.TOUCH_ROTATE;
 
-        if ( state !== STATE.NONE ) {
+				break;
 
-            scope.dispatchEvent( startEvent );
+			case 2:	// two-fingered touch: dolly
 
-        }
+				if ( scope.enableZoom === false ) return;
 
-    }
+				handleTouchStartDolly( event );
 
-    function onTouchMove( event ) {
+				state = STATE.TOUCH_DOLLY;
 
-        if ( scope.enabled === false ) return;
+				break;
 
-        event.preventDefault();
-        event.stopPropagation();
+			case 3: // three-fingered touch: pan
 
-        switch ( event.touches.length ) {
+				if ( scope.enablePan === false ) return;
 
-            case 1: // one-fingered touch: rotate
+				handleTouchStartPan( event );
 
-                if ( scope.enableRotate === false ) return;
-                if ( state !== STATE.TOUCH_ROTATE ) return; // is this needed?...
+				state = STATE.TOUCH_PAN;
 
-                handleTouchMoveRotate( event );
+				break;
 
-                break;
+			default:
 
-            case 2: // two-fingered touch: dolly
+				state = STATE.NONE;
 
-                if ( scope.enableZoom === false ) return;
-                if ( state !== STATE.TOUCH_DOLLY ) return; // is this needed?...
+		}
 
-                handleTouchMoveDolly( event );
+		if ( state !== STATE.NONE ) {
 
-                break;
+			scope.dispatchEvent( startEvent );
 
-            case 3: // three-fingered touch: pan
+		}
 
-                if ( scope.enablePan === false ) return;
-                if ( state !== STATE.TOUCH_PAN ) return; // is this needed?...
+	}
 
-                handleTouchMovePan( event );
+	function onTouchMove( event ) {
 
-                break;
+		if ( scope.enabled === false ) return;
 
-            default:
+		event.preventDefault();
+		event.stopPropagation();
 
-                state = STATE.NONE;
+		switch ( event.touches.length ) {
 
-        }
+			case 1: // one-fingered touch: rotate
 
-    }
+				if ( scope.enableRotate === false ) return;
+				if ( state !== STATE.TOUCH_ROTATE ) return; // is this needed?...
 
-    function onTouchEnd( event ) {
+				handleTouchMoveRotate( event );
 
-        if ( scope.enabled === false ) return;
+				break;
 
-        handleTouchEnd( event );
+			case 2: // two-fingered touch: dolly
 
-        scope.dispatchEvent( endEvent );
+				if ( scope.enableZoom === false ) return;
+				if ( state !== STATE.TOUCH_DOLLY ) return; // is this needed?...
 
-        state = STATE.NONE;
+				handleTouchMoveDolly( event );
 
-    }
+				break;
 
-    function onContextMenu( event ) {
+			case 3: // three-fingered touch: pan
 
-        event.preventDefault();
+				if ( scope.enablePan === false ) return;
+				if ( state !== STATE.TOUCH_PAN ) return; // is this needed?...
 
-    }
+				handleTouchMovePan( event );
 
-    //
+				break;
 
-    scope.domElement.addEventListener( 'contextmenu', onContextMenu, false );
+			default:
 
-    scope.domElement.addEventListener( 'mousedown', onMouseDown, false );
-    scope.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
-    scope.domElement.addEventListener( 'MozMousePixelScroll', onMouseWheel, false ); // firefox
+				state = STATE.NONE;
 
-    scope.domElement.addEventListener( 'touchstart', onTouchStart, false );
-    scope.domElement.addEventListener( 'touchend', onTouchEnd, false );
-    scope.domElement.addEventListener( 'touchmove', onTouchMove, false );
+		}
 
-    window.addEventListener( 'keydown', onKeyDown, false );
+	}
 
-    // force an update at start
+	function onTouchEnd( event ) {
 
-    this.update();
+		if ( scope.enabled === false ) return;
+
+		handleTouchEnd( event );
+
+		scope.dispatchEvent( endEvent );
+
+		state = STATE.NONE;
+
+	}
+
+	function onContextMenu( event ) {
+
+		if ( scope.enabled === false ) return;
+
+		event.preventDefault();
+
+	}
+
+	//
+
+	scope.domElement.addEventListener( 'contextmenu', onContextMenu, false );
+
+	scope.domElement.addEventListener( 'mousedown', onMouseDown, false );
+	scope.domElement.addEventListener( 'wheel', onMouseWheel, false );
+
+	scope.domElement.addEventListener( 'touchstart', onTouchStart, false );
+	scope.domElement.addEventListener( 'touchend', onTouchEnd, false );
+	scope.domElement.addEventListener( 'touchmove', onTouchMove, false );
+
+	window.addEventListener( 'keydown', onKeyDown, false );
+
+	// force an update at start
+
+	this.update();
 
 };
 
@@ -914,125 +940,128 @@ THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;
 
 Object.defineProperties( THREE.OrbitControls.prototype, {
 
-    center: {
+	center: {
 
-        get: function () {
+		get: function () {
 
-            console.warn( 'THREE.OrbitControls: .center has been renamed to .target' );
-            return this.target;
+			console.warn( 'THREE.OrbitControls: .center has been renamed to .target' );
+			return this.target;
 
-        }
+		}
 
-    },
+	},
 
-    // backward compatibility
+	// backward compatibility
 
-    noZoom: {
+	noZoom: {
 
-        get: function () {
+		get: function () {
 
-            console.warn( 'THREE.OrbitControls: .noZoom has been deprecated. Use .enableZoom instead.' );
-            return ! this.enableZoom;
+			console.warn( 'THREE.OrbitControls: .noZoom has been deprecated. Use .enableZoom instead.' );
+			return ! this.enableZoom;
 
-        },
+		},
 
-        set: function ( value ) {
+		set: function ( value ) {
 
-            console.warn( 'THREE.OrbitControls: .noZoom has been deprecated. Use .enableZoom instead.' );
-            this.enableZoom = ! value;
+			console.warn( 'THREE.OrbitControls: .noZoom has been deprecated. Use .enableZoom instead.' );
+			this.enableZoom = ! value;
 
-        }
+		}
 
-    },
+	},
 
-    noRotate: {
+	noRotate: {
 
-        get: function () {
+		get: function () {
 
-            console.warn( 'THREE.OrbitControls: .noRotate has been deprecated. Use .enableRotate instead.' );
-            return ! this.enableRotate;
+			console.warn( 'THREE.OrbitControls: .noRotate has been deprecated. Use .enableRotate instead.' );
+			return ! this.enableRotate;
 
-        },
+		},
 
-        set: function ( value ) {
+		set: function ( value ) {
 
-            console.warn( 'THREE.OrbitControls: .noRotate has been deprecated. Use .enableRotate instead.' );
-            this.enableRotate = ! value;
+			console.warn( 'THREE.OrbitControls: .noRotate has been deprecated. Use .enableRotate instead.' );
+			this.enableRotate = ! value;
 
-        }
+		}
 
-    },
+	},
 
-    noPan: {
+	noPan: {
 
-        get: function () {
+		get: function () {
 
-            console.warn( 'THREE.OrbitControls: .noPan has been deprecated. Use .enablePan instead.' );
-            return ! this.enablePan;
+			console.warn( 'THREE.OrbitControls: .noPan has been deprecated. Use .enablePan instead.' );
+			return ! this.enablePan;
 
-        },
+		},
 
-        set: function ( value ) {
+		set: function ( value ) {
 
-            console.warn( 'THREE.OrbitControls: .noPan has been deprecated. Use .enablePan instead.' );
-            this.enablePan = ! value;
+			console.warn( 'THREE.OrbitControls: .noPan has been deprecated. Use .enablePan instead.' );
+			this.enablePan = ! value;
 
-        }
+		}
 
-    },
+	},
 
-    noKeys: {
+	noKeys: {
 
-        get: function () {
+		get: function () {
 
-            console.warn( 'THREE.OrbitControls: .noKeys has been deprecated. Use .enableKeys instead.' );
-            return ! this.enableKeys;
+			console.warn( 'THREE.OrbitControls: .noKeys has been deprecated. Use .enableKeys instead.' );
+			return ! this.enableKeys;
 
-        },
+		},
 
-        set: function ( value ) {
+		set: function ( value ) {
 
-            console.warn( 'THREE.OrbitControls: .noKeys has been deprecated. Use .enableKeys instead.' );
-            this.enableKeys = ! value;
+			console.warn( 'THREE.OrbitControls: .noKeys has been deprecated. Use .enableKeys instead.' );
+			this.enableKeys = ! value;
 
-        }
+		}
 
-    },
+	},
 
-    staticMoving : {
+	staticMoving: {
 
-        get: function () {
+		get: function () {
 
-            console.warn( 'THREE.OrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.' );
-            return ! this.enableDamping;
+			console.warn( 'THREE.OrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.' );
+			return ! this.enableDamping;
 
-        },
+		},
 
-        set: function ( value ) {
+		set: function ( value ) {
 
-            console.warn( 'THREE.OrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.' );
-            this.enableDamping = ! value;
+			console.warn( 'THREE.OrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.' );
+			this.enableDamping = ! value;
 
-        }
+		}
 
-    },
+	},
 
-    dynamicDampingFactor : {
+	dynamicDampingFactor: {
 
-        get: function () {
+		get: function () {
 
-            console.warn( 'THREE.OrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.' );
-            return this.dampingFactor;
+			console.warn( 'THREE.OrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.' );
+			return this.dampingFactor;
 
-        },
+		},
 
-        set: function ( value ) {
+		set: function ( value ) {
 
-            console.warn( 'THREE.OrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.' );
-            this.dampingFactor = value;
+			console.warn( 'THREE.OrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.' );
+			this.dampingFactor = value;
 
-        }
+		}
 
-    }
+	}
 
 } );
+
+THREE.ScreenSpacePanning = 0;
+THREE.HorizontalPanning = 1;
