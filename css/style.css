@@ -14,8 +14,12 @@
 }
 
 
-body.index {
-	font-size: 2.5em;
+div.large-text {
+	font-size: 2em;
+}
+
+.row {
+	margin: 0px;
 }
 
 
