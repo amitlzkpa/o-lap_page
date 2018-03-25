@@ -2,7 +2,7 @@
 var scene, renderer;
 var camera, cameraControls;
 
-var WIDTH_FACTOR = 0.64;
+var WIDTH_FACTOR = 0.66;
 
 
 if( !init() )	animate();
@@ -45,8 +45,8 @@ function init(){
 	cameraControls	= new THREE.OrbitControls(camera, renderer.domElement);
 	cameraControls.autoRotate = false;
 
-	// var gridHelper = new THREE.GridHelper(1000, 100);
-	// scene.add(gridHelper);
+	var gridHelper = new THREE.GridHelper(10000, 100);
+	scene.add(gridHelper);
 
 	// transparently support window resize
 	THREEx.WindowResize.bind(renderer, camera, WIDTH_FACTOR);
