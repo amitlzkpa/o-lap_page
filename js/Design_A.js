@@ -54,9 +54,9 @@ var matLine_black = new THREE.LineBasicMaterial({ linewidth: 80, color: 0x000000
 var matLine_white = new THREE.LineBasicMaterial({ linewidth: 80, color: 0xffffff, linecap: 'round', linejoin:  'round' });
 var matMesh_debug = new THREE.MeshNormalMaterial( { side: THREE.DoubleSide, wireframe: false, flatShading: THREE.SmoothShading, transparent: true, opacity: 0.4 });
 
-var matMesh_red = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, flatShading: THREE.SmoothShading, color: 0xd32f2f, specular: 0x010101, } );
-var matMesh_blue = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, flatShading: THREE.SmoothShading, color: 0x01579b, specular: 0x010101, } );
-var matMesh_green = new THREE.MeshToonMaterial( { side: THREE.DoubleSide, flatShading: THREE.SmoothShading, color: 0x33691e, specular: 0x010101, } );
+var matMesh_red = new THREE.MeshPhongMaterial( { side: THREE.DoubleSide, color: 0xd32f2f } );
+var matMesh_blue = new THREE.MeshPhongMaterial( { side: THREE.DoubleSide, color: 0x01579b } );
+var matMesh_green = new THREE.MeshPhongMaterial( { side: THREE.DoubleSide, color: 0x33691e } );
 var matMesh_wirewhite = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } );
 
 
@@ -461,11 +461,11 @@ Design_A.updateGeom_debug = function(debugGroup) {
 	// obj.add(new THREE.Mesh( srf_ft.toThreeGeometry(), matMesh_wirewhite ));
 
 
-	getIsoCurves(srf_bs, 4).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
-	getIsoCurves(srf_bk, 4).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
-	getIsoCurves(srf_tp, 4).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
-	getIsoCurves(srf_st, 4).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
-	getIsoCurves(srf_ft, 4).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
+	// getIsoCurves(srf_bs, 8).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
+	// getIsoCurves(srf_bk, 8).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
+	// getIsoCurves(srf_tp, 8).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
+	// getIsoCurves(srf_st, 8).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
+	// getIsoCurves(srf_ft, 8).forEach(s => obj.add(new THREE.Line( s.toThreeGeometry(), matLine_white )));
 
 
 
@@ -495,8 +495,28 @@ Design_A.updateGeom_debug = function(debugGroup) {
 
 
 
-	debugGroup.add(obj);
 
+
+
+// 15892829458b1f44ea833022218839ca1275d8d0
+
+
+
+
+	// var p5 = [-1000,	150,	-1000	];
+	// var p6 = [1000,		150,	-1000	];
+	// var p7 = [1000,		150,	1000	];
+	// var p8 = [-1000,	150,	1000	];
+
+	// srf2 = verb.geom.NurbsSurface.byCorners( p5, p6, p7, p8 );
+
+	// obj.add(new THREE.Mesh( srf2.toThreeGeometry(), matMesh_debug ));
+
+	// var res = verb.geom.Intersect.surfaces( srf_bk, srf2, 1e-6 );
+	// obj.add(new THREE.Line( res[0].toThreeGeometry(), matLine_white ));
+
+
+	debugGroup.add(obj);
 
 }
 

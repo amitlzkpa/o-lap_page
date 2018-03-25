@@ -89,3 +89,26 @@ div.large-text {
 	overflow-x: hidden;
 	overflow-y: hidden;	
 }
+
+
+
+
+
+.tabs .tab a{
+    color:#9e9e9e;
+    background-color: #eceff1;
+}
+.tabs .tab a:hover {
+    background-color: #eceff1;
+	color:#212121;
+}
+.tabs .tab a.active {
+	background-color: #cfd8dc;
+	color:#212121;
+}
+.tabs .tab.disabled a,.tabs .tab.disabled a:hover {
+	color:#cfd8dc;
+}
+.tabs .indicator {
+	background-color:#616161;
+}
