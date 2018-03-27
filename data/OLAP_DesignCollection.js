@@ -14,39 +14,49 @@ var OLAP_DesignCollection =  {
 };
 
 
-var s = "https://raw.githubusercontent.com/amitlzkpa/o-lap_plato/master/design/display.jpg";
 
 
 
 
+var $gall = $("#gall");
 
-function loadAllDesigns() {
+async function loadData(collData) {
+	var name = collData["name"];
+	var gitUrl = collData["git-url"];
+	var gitAuth = gitUrl.split('/')[3];
+	var gitRepo = gitUrl.split('/')[4];
+	var displayImageUrl = `https://raw.githubusercontent.com/${gitAuth}/${gitRepo}/master/design/display.jpg`;
+	var infoJsonUrl = `https://raw.githubusercontent.com/${gitAuth}/${gitRepo}/master/design/info.json`;
+	var infoJson = await $.getJSON(infoJsonUrl);
+	var cardHtml = 	`
+						<a href="./app.html">
+					        <div class="card">
+								<div class="card-image">
+									<img src="${displayImageUrl}">
+									<span class="card-title black-text">
+									<big>${name}</big>
+									</br>
+									<small>${infoJson["version"]}</small>
+									</span>
+								</div>
+								<div class="card-content grey-text">
+									<p>${infoJson["short_desc"]}</p>
+									<p>${infoJson["designer"]}</p>
+								</div>
+					        </div>
+				        </a>
+					`;
+	$gall.append(cardHtml);
+}
 
-	var $gall = $("#gall");
+
+
+async function loadAllDesigns() {
+
 	$gall.empty();
 	for (var i = 0; i < OLAP_DesignNames.length; i++) {
 		var collData = OLAP_DesignCollection[OLAP_DesignNames[i]];
-		var name = collData["name"];
-		var gitUrl = collData["git-url"];
-		var gitAuth = gitUrl.split('/')[3];
-		var gitRepo = gitUrl.split('/')[4];
-		var displayImageUrl = `https://raw.githubusercontent.com/${gitAuth}/${gitRepo}/master/design/display.jpg`;
-		var cardHtml = 	`
-					        <div class="card">
-					          <div class="card-image">
-					            <img src="${displayImageUrl}">
-					            <span class="card-title black-text">${name}</span>
-					          </div>
-					          <div class="card-content">
-					            <p>I am a very simple card. I am good at containing small bits of information.
-					            I am convenient because I require little markup to use effectively.</p>
-					          </div>
-					          <div class="card-action">
-					            <a href="./app.html">This is a link</a>
-					          </div>
-					        </div>
-						`;
-		$gall.append(cardHtml);
+		await loadData(collData);
 	}
 
 };
