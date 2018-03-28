@@ -29,7 +29,7 @@ async function loadData(collData) {
 	var infoJsonUrl = `https://raw.githubusercontent.com/${gitAuth}/${gitRepo}/master/design/info.json`;
 	var infoJson = await $.getJSON(infoJsonUrl);
 	var cardHtml = 	`
-						<a href="./app.html">
+						<a href="./app.html?a=${gitAuth}&r=${gitRepo}">
 					        <div class="card">
 								<div class="card-image">
 									<img src="${displayImageUrl}">

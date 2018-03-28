@@ -105,7 +105,22 @@
 
   <script src="js/OLAPFramework.js"></script>
 
+  <div id="jsTgt"></div>
+
   <script type="text/javascript">
+    var url = new URL(window.location.href);
+    var a = url.searchParams.get("a");
+    var r = url.searchParams.get("r");
+    var designJSUrl = `https://raw.githubusercontent.com/${a}/${r}/master/design/Design.js`;
+    console.log(designJSUrl);
+    // $.getScript(designJSUrl);
+    var head = document.getElementById('jsTgt');
+    var script = document.createElement('script');
+    script.type = 'text';
+    script.src = designJSUrl;
+    console.log(script);
+    script.innerHTML = designJSUrl;
+    head.appendChild(script);
     if (typeof Design != 'undefined') OLAP.openDesign(Design);
   </script>
 
