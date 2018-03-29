@@ -108,20 +108,49 @@
   <div id="jsTgt"></div>
 
   <script type="text/javascript">
+    async function loadDesignFromURL(designJSUrl) {
+      var head = document.getElementById('jsTgt');
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = designJSUrl;
+      console.log(designJSUrl);
+      var designJS = await jQuery.get(designJSUrl);
+      // console.log(designJS);
+      script.innerHTML = designJS;
+      head.appendChild(script);
+      setTimeout( function(){ 
+        console.log(Design);
+        if (typeof Design != 'undefined') OLAP.openDesign(Design);
+      }  , 1000 );
+    }
+
+    async function foo(url) {
+      var script = $("<script />", {
+          src: url,
+          type: "application/javascript"
+        }
+      );
+      $("#jsTgt").append(script);
+    }
+
+
+    // console.log(designJSUrl);
+    // $.getJSON(designJSUrl).then(response => {
+    //   console.log('succhess');
+    //   console.log(response.responseText);
+    // }).catch(e => {
+    //   console.log('err');
+    //   console.log(e);
+    // });
+
+
     var url = new URL(window.location.href);
     var a = url.searchParams.get("a");
     var r = url.searchParams.get("r");
-    var designJSUrl = `https://raw.githubusercontent.com/${a}/${r}/master/design/Design.js`;
-    console.log(designJSUrl);
+    var designJSUrl = `https://rawgit.com/${a}/${r}/master/design/Design.js?callback=?`;
     // $.getScript(designJSUrl);
-    var head = document.getElementById('jsTgt');
-    var script = document.createElement('script');
-    script.type = 'text';
-    script.src = designJSUrl;
-    console.log(script);
-    script.innerHTML = designJSUrl;
-    head.appendChild(script);
-    if (typeof Design != 'undefined') OLAP.openDesign(Design);
+    loadDesignFromURL(designJSUrl);
+    // foo(designJSUrl);
   </script>
 
   </body>
