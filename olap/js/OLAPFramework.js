@@ -81,7 +81,8 @@ class OLAPFramework {
 		    var value = this.inputVals[key];
 		    inpStateCopy[key] = value;
 		}
-		this.loadedDesign.onParamChange(inpStateCopy, this.geometry);
+		this.loadedDesign.inputState = inpStateCopy;
+		this.loadedDesign.onParamChange(inpStateCopy);
 		this.loadedDesign.updateGeom(this.geometry)
 		this.scene.add(this.geometry);
 	}
