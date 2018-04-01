@@ -25,8 +25,21 @@ function sleep(ms) {
 }
 
 
-var url = new URL(window.location.href);
-var gitAuthor = url.searchParams.get("a");
-var gitRepo = url.searchParams.get("r");
-var designJSUrl = `https://rawgit.com/${gitAuthor}/${gitRepo}/master/design/Design.js`;
-loadDesignFromURL(designJSUrl);
+async function getCommitHistory(gitAuthor, gitRepo) {
+  var commitHistoryQueryURL = `https://api.github.com/repos/${gitAuthor}/${gitRepo}/commits/master`;
+  return (await $.getJSON(commitHistoryQueryURL));
+}
+
+
+async function loadLatestDesignFromGithub() {
+  var url = new URL(window.location.href);
+  var gitAuthor = url.searchParams.get("a");
+  var gitRepo = url.searchParams.get("r");
+  // var commitHistory = await getCommitHistory(gitAuthor, gitRepo);
+  // var latestCommitHash = commitHistory["sha"];
+  var designJSUrl = `https://gitcdn.xyz/repo/${gitAuthor}/${gitRepo}/master/design/Design.js`;
+  loadDesignFromURL(designJSUrl);
+}
+
+
+loadLatestDesignFromGithub();

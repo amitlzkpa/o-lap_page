@@ -18,7 +18,7 @@ async function loadData(gitUrl) {
 	var gitAuth = gitUrl.split('/')[3];
 	var gitRepo = gitUrl.split('/')[4];
 	var displayImageUrl = `https://raw.githubusercontent.com/${gitAuth}/${gitRepo}/master/design/display.jpg`;
-	var designUrl = `https://rawgit.com/${gitAuth}/${gitRepo}/master/design/Design.js`;
+	var designUrl = `https://gitcdn.xyz/repo/${gitAuth}/${gitRepo}/master/design/Design.js`;
 	await addDesignAsync(designUrl, gitAuth, gitRepo, displayImageUrl);
 }
 
