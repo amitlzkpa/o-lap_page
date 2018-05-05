@@ -240,6 +240,38 @@ class OLAPFramework {
 		if(infoJSON.message != "") console.log(infoJSON.message);
 	}
 
+	async downloadHumans() {
+		let url, model, objLoader;
+		url = "https://raw.githubusercontent.com/amitlzkpa/o-lap_page/master/olap/files/denace.obj";
+		model = await $.get(url);
+		objLoader = new THREE.OBJLoader();
+		objLoader.setPath(url);
+	    objLoader.load(model, function (object) {
+		    object.traverse( function ( child ) {
+		        if ( child instanceof THREE.Mesh ) {
+		            child.material = new THREE.MeshPhongMaterial( { side: THREE.DoubleSide, color: 0xBEBEBE, transparent: true, opacity: 0.3, shininess: 0.1, specular: 0x000000 } );
+		        }
+		    });
+			OLAP.maleModel = new THREE.Object3D();
+	    	OLAP.maleModel.add(object);
+	    });
+		url = "https://raw.githubusercontent.com/amitlzkpa/o-lap_page/master/olap/files/bianca.obj";
+		model = await $.get(url);
+		objLoader = new THREE.OBJLoader();
+		objLoader.setPath(url);
+	    objLoader.load(model, function (object) {
+		    object.traverse( function ( child ) {
+		        if ( child instanceof THREE.Mesh ) {
+		            child.material = new THREE.MeshPhongMaterial( { side: THREE.DoubleSide, color: 0xBEBEBE, transparent: true, opacity: 0.3, shininess: 0.1, specular: 0x000000 } );
+		        }
+		    });
+			OLAP.femaleModel = new THREE.Object3D();
+	    	OLAP.femaleModel.add(object);
+	    });
+	    OLAP.activeHumanGeom = new THREE.Object3D();
+    	OLAP.activeHumanGeom.add(OLAP.maleModel);
+	}
+
 	constructor() {
 		this.version = "1.0.0";
 		this.scene = scene;
@@ -259,6 +291,10 @@ class OLAPFramework {
 		this.geometry = new THREE.Object3D();
 		this.slices = new THREE.Object3D();
 		this.sliceManager = new SliceManager();
+		this.maleModel = new THREE.Object3D();
+		this.femaleModel = new THREE.Object3D();
+		this.activeHumanGeom = new THREE.Object3D();
+		this.downloadHumans();
 
 	    $('#rotate-switch').on('change', function(e) {
 	      var isRot = $(this).is(':checked');
